@@ -22,13 +22,6 @@ class AudioLoopBlender {
         }
     }
 
-    enum class State {
-        A,
-        A2B,
-        B,
-        B2A
-    }
-
     private fun configRaise(): VolumeShaper.Configuration {
         return VolumeShaper.Configuration.Builder()
             .setCurve(floatArrayOf(0f, 0.1f, 0.3f, 0.5f, 1f),  floatArrayOf(0f, 0.316f, 0.546f, 0.7f, 1f))
@@ -52,10 +45,6 @@ class AudioLoopBlender {
     private var shaperA: VolumeShaper? = null
     private var shaperB: VolumeShaper? = null
 
-    private var state: State = State.A
-
-
-    private val preStart = 100
     private val blendDuration = 400
     private val blendMargin = 2000
     private val monitorUpdateRate = 300
@@ -139,109 +128,46 @@ class AudioLoopBlender {
         shaperB = playerB.createVolumeShaper(bConfig)
     }
 
-    private fun resetDonePlayers() {
-        if((playerA.currentPosition == playerA.duration) && !playerA.isPlaying) {
-            playerA.stop()
-            playerA.prepareAsync()
-
-            Log.d(TAG, "Reset A")
-        }
-
-        if((playerB.currentPosition == playerB.duration) && !playerB.isPlaying) {
-            playerB.stop()
-            playerB.prepareAsync()
-            Log.d(TAG, "Reset B")
-        }
-    }
-
     private var shaperStartRequired = false
     private var activeA = true
 
     private fun monitorUpdate() {
-        Log.d(TAG, "Monitor Tick")
+        Log.v(TAG, "Monitor Update")
 
-        if(shaperStartRequired) {
+        if (shaperStartRequired) {
             shaperStartRequired = false
+
+            Log.d(TAG, "Starting shapers...")
 
             shaperA?.apply(VolumeShaper.Operation.PLAY)
             shaperB?.apply(VolumeShaper.Operation.PLAY)
 
-            Log.d(TAG, "Starting shapers...")
         }
 
-        if(playerA.isPlaying) {
+        if (playerA.isPlaying) {
             if (!playerB.isPlaying && playerA.currentPosition > (playerA.duration - blendMargin)) {
+                Log.d(TAG, "Fade to B")
+
                 setupShapers(true)
                 playerB.start()
+
                 shaperStartRequired = true
                 activeA = false
-
-                Log.d(TAG, "Fade to B")
             }
         }
 
-        if(playerB.isPlaying) {
+        if (playerB.isPlaying) {
             if (!playerA.isPlaying && playerB.currentPosition > playerB.duration - blendMargin) {
+                Log.d(TAG, "Fade to A")
+
                 setupShapers(false)
                 playerA.start()
+
                 shaperStartRequired = true
                 activeA = true
-
-                Log.d(TAG, "Fade to A")
             }
         }
-
-//        resetDonePlayers()
     }
-
-//
-//
-//    private fun setupFadeTo2() {
-//        val fadeAfter = playerA.duration - blendMargin
-//
-//        monitor.postDelayed({
-//            Toast.makeText(context, "Fade", Toast.LENGTH_SHORT).show()
-//            shaperA = playerA.createVolumeShaper(configFall())
-//            shaperB = playerB.createVolumeShaper(configRaise())
-//
-//            playerB.start()
-//
-//            setupFadeTo1()
-//        }, fadeAfter.toLong() - preStart)
-//
-//
-//        monitor.postDelayed({
-//            shaperB?.apply(VolumeShaper.Operation.PLAY)
-//            shaperA?.apply(VolumeShaper.Operation.PLAY)
-//        }, fadeAfter.toLong())
-//
-//
-//        monitor.postDelayed({
-//            setupFadeTo1()
-//        }, fadeAfter.toLong() + blendDuration + 1000)
-//    }
-//
-//    private fun setupFadeTo1() {
-//        val fadeAfter = playerB.duration - blendMargin
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            Toast.makeText(context, "Fade", Toast.LENGTH_SHORT).show()
-//            shaperA = playerA.createVolumeShaper(configRaise())
-//            shaperB = playerB.createVolumeShaper(configFall())
-//
-//        }, fadeAfter.toLong() - preStart)
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            shaperB?.apply(VolumeShaper.Operation.PLAY)
-//            shaperA?.apply(VolumeShaper.Operation.PLAY)
-//        }, fadeAfter.toLong())
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//        }, fadeAfter.toLong() + blendDuration + 1000)
-//    }
 
 
     fun start() {
@@ -306,3 +232,20 @@ class AudioLoopBlender {
 //    .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
 //    .setDuration(blendDuration.toLong())
 //    .build()
+
+
+
+//private fun resetDonePlayers() {
+//    if((playerA.currentPosition == playerA.duration) && !playerA.isPlaying) {
+//        playerA.stop()
+//        playerA.prepareAsync()
+//
+//        Log.d(TAG, "Reset A")
+//    }
+//
+//    if((playerB.currentPosition == playerB.duration) && !playerB.isPlaying) {
+//        playerB.stop()
+//        playerB.prepareAsync()
+//        Log.d(TAG, "Reset B")
+//    }
+//}
