@@ -17,7 +17,12 @@
         <service
                 android:name=".SoundService"
                 android:enabled="true"
-                android:exported="false" />
+                android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
 
         <activity
                 android:name=".MainActivity"

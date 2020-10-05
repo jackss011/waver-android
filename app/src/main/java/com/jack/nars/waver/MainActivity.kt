@@ -1,11 +1,17 @@
 package com.jack.nars.waver
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -76,6 +82,87 @@ class MainActivity : AppCompatActivity() {
 //            .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
 //            .setDuration(duration)
 //            .build()
+
+        mediaBrowser = MediaBrowserCompat(
+            this,
+            ComponentName(this, SoundService::class.java),
+            connectionCallbacks,
+            null // optional Bundle
+        )
+    }
+
+    private lateinit var mediaBrowser: MediaBrowserCompat
+
+    private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
+        override fun onConnected() {
+            Log.d(TAG, "Media Service connected")
+
+            // Get the token for the MediaSession
+            mediaBrowser.sessionToken.also { token ->
+                val mediaController = MediaControllerCompat(this@MainActivity, token)
+                MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
+            }
+
+            buildTransportControls()
+        }
+
+        override fun onConnectionSuspended() {
+            // The Service has crashed. Disable transport controls until it automatically reconnects
+        }
+
+        override fun onConnectionFailed() {
+            // The Service has refused our connection
+        }
+    }
+
+    private lateinit var playPause: Button
+
+    private val controllerCallback = object: MediaControllerCompat.Callback() {
+        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+            Log.d(TAG, "State changed")
+        }
+    }
+
+    fun buildTransportControls() {
+        val mediaController = MediaControllerCompat.getMediaController(this@MainActivity)
+        // Grab the view for the play/pause button
+        playPause = findViewById<Button>(R.id.play_pause).apply {
+            setOnClickListener {
+                // Since this is a play/pause button, you'll need to test the current state
+                // and choose the action accordingly
+
+                val pbState = mediaController.playbackState.state
+                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+                    mediaController.transportControls.pause()
+                } else {
+                    mediaController.transportControls.play()
+                }
+            }
+        }
+
+        // Display the initial state
+        val metadata = mediaController.metadata
+        val pbState = mediaController.playbackState
+
+        // Register a Callback to stay in sync
+        mediaController.registerCallback(controllerCallback)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mediaBrowser.connect()
+
+//        val intent = Intent()
+//            .setClass(this, SoundService::class.java)
+//
+//        bindService(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
+        mediaBrowser.disconnect()
     }
 
 
