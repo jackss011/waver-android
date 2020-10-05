@@ -2,6 +2,7 @@ package com.jack.nars.waver.sound
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.media.VolumeShaper
 import android.os.Handler
 import android.os.Looper
@@ -87,7 +88,31 @@ class AudioLoopBlender {
         playerA = preparePlayer(context, resId)
         playerB = preparePlayer(context, resId)
 
-//        playerA.setVolume(0f, 0f)
+        playerA.apply {
+            setOnCompletionListener {
+                it.stop()
+                it.prepareAsync()
+
+                Log.d(TAG, "Reset A")
+            }
+
+            setOnPreparedListener {
+                Log.d(TAG, "Prepared A")
+            }
+        }
+
+        playerB.apply {
+            setOnCompletionListener {
+                it.stop()
+                it.prepareAsync()
+
+                Log.d(TAG, "Reset B")
+            }
+
+            setOnPreparedListener {
+                Log.d(TAG, "Prepared B")
+            }
+        }
     }
 
     private fun startMonitor() {
@@ -166,7 +191,7 @@ class AudioLoopBlender {
             }
         }
 
-        resetDonePlayers()
+//        resetDonePlayers()
     }
 
 //
