@@ -2,13 +2,15 @@ package com.jack.nars.waver
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.PlaybackStateCompat
+import android.media.browse.MediaBrowser
+//import android.support.v4.media.MediaBrowserCompat
+import android.media.session.MediaController
+//import android.support.v4.media.session.MediaControllerCompat
+import android.media.session.PlaybackState
+//import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -17,9 +19,6 @@ import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import com.jack.nars.waver.sound.AudioLoopBlender
-import com.jack.nars.waver.sound.AudioLoopPlayer
-import kotlin.math.log
-import kotlin.math.log10
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 //            .setDuration(duration)
 //            .build()
 
-        mediaBrowser = MediaBrowserCompat(
+        mediaBrowser = MediaBrowser(
             this,
             ComponentName(this, SoundService::class.java),
             connectionCallbacks,
@@ -91,16 +90,16 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private lateinit var mediaBrowser: MediaBrowserCompat
+    private lateinit var mediaBrowser: MediaBrowser
 
-    private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
+    private val connectionCallbacks = object : MediaBrowser.ConnectionCallback() {
         override fun onConnected() {
             Log.d(TAG, "Media Service connected")
 
             // Get the token for the MediaSession
             mediaBrowser.sessionToken.also { token ->
-                val mediaController = MediaControllerCompat(this@MainActivity, token)
-                MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
+                mediaController = MediaController(this@MainActivity, token)
+//                MediaController.setMediaController(this@MainActivity, mediaController)
             }
 
             buildTransportControls()
@@ -117,25 +116,26 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var playPause: Button
 
-    private val controllerCallback = object: MediaControllerCompat.Callback() {
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+    private val controllerCallback = object: MediaController.Callback() {
+        override fun onPlaybackStateChanged(state: PlaybackState?) {
             Log.d(TAG, "State changed")
         }
     }
 
     fun buildTransportControls() {
-        val mediaController = MediaControllerCompat.getMediaController(this@MainActivity)
+//        val mediaController = MediaController.getMediaController()
         // Grab the view for the play/pause button
         playPause = findViewById<Button>(R.id.play_pause).apply {
             setOnClickListener {
                 // Since this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
 
-                val pbState = mediaController.playbackState.state
-                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+                val pbState = mediaController.playbackState?.state
+                if (pbState == PlaybackState.STATE_PLAYING) {
                     mediaController.transportControls.pause()
                 } else {
                     mediaController.transportControls.play()
+//                    mediaController.transportControls.pla
                 }
             }
         }
@@ -144,7 +144,12 @@ class MainActivity : AppCompatActivity() {
         val metadata = mediaController.metadata
         val pbState = mediaController.playbackState
 
-        Log.d(TAG, "Initial state: %d".format(pbState.state))
+        if (pbState != null) {
+            Log.d(TAG, "Initial state: %d".format(pbState.state))
+        }
+        else {
+            Log.d(TAG, "Initial state: null")
+        }
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback)
@@ -163,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
+        mediaController.unregisterCallback(controllerCallback)
         mediaBrowser.disconnect()
     }
 
