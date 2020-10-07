@@ -42,7 +42,16 @@ class SoundService : MediaBrowserServiceCompat() {
             setContentTitle("Hello")
             setContentText("Test")
             setSubText("SubTest")
-//            setLargeIcon(description?.iconBitmap)
+            setLargeIcon(description?.iconBitmap)
+
+            setShowWhen(false)
+
+            if (controller == null)
+                Log.e(TAG, "Controller is not with us")
+            else {
+                Log.i(TAG, "Controller is fine: %s".format(controller.sessionActivity?.javaClass.toString()))
+
+            }
 
             // Enable launching the player by clicking the notification
             setContentIntent(controller?.sessionActivity)
@@ -78,22 +87,15 @@ class SoundService : MediaBrowserServiceCompat() {
             // Take advantage of MediaStyle features
             setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mediaSession?.sessionToken)
+                    .setMediaSession(this@SoundService.mediaSession?.sessionToken)
                     .setShowActionsInCompactView(0)
-
-                    // Add a cancel button
-                    .setShowCancelButton(true)
-                    .setCancelButtonIntent(
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(
-                            this@SoundService,
-                            PlaybackStateCompat.ACTION_STOP
-                        )
-                    )
             )
         }
 
         return builder.build()
     }
+
+
 
     override fun onCreate() {
         super.onCreate()
@@ -103,6 +105,11 @@ class SoundService : MediaBrowserServiceCompat() {
 
         // Create a MediaSessionCompat
         mediaSession = MediaSessionCompat(baseContext, TAG).apply {
+            // Enable callbacks from MediaButtons and TransportControls
+            setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                    or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            )
+
             // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
             stateBuilder = PlaybackStateCompat.Builder()
                 .setActions(
@@ -118,12 +125,22 @@ class SoundService : MediaBrowserServiceCompat() {
                     Log.d(TAG, "Session Play")
 
 //                    val am = this@SoundService.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                    startService(Intent(this@SoundService, SoundService::class.java))
+                    startService(Intent(this@SoundService, MediaBrowserService::class.java))
                     // Set the session active  (and update metadata and state)
 
-                    this@SoundService.mediaSession?.isActive = true
+                    this@apply.isActive = true
                     // start the player (custom call)
 //                    player.start()
+
+                    this@SoundService.mediaSession?.setPlaybackState(PlaybackStateCompat.Builder()
+                        .setActions(PlaybackStateCompat.ACTION_PAUSE
+                                or PlaybackStateCompat.ACTION_STOP
+                                or PlaybackStateCompat.ACTION_PLAY_PAUSE)
+                        .setState(
+                            PlaybackStateCompat.STATE_PLAYING,
+                            PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                        1f)
+                        .build())
                     // Register BECOME_NOISY BroadcastReceiver
 //                    registerReceiver(myNoisyAudioStreamReceiver, intentFilter)
                     // Put the service in the foreground, post notification
@@ -133,16 +150,40 @@ class SoundService : MediaBrowserServiceCompat() {
                 override fun onPause() {
                     Log.d(TAG, "Session Pause")
 
+                    this@SoundService.mediaSession?.setPlaybackState(PlaybackStateCompat.Builder()
+                        .setActions(PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_STOP)
+                        .setState(
+                            PlaybackStateCompat.STATE_PAUSED,
+                            PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                            0f)
+                        .build())
+
                     this@SoundService.stopForeground(false)
                 }
 
                 override fun onStop() {
                     Log.d(TAG, "Session Stop")
 
+                    this@SoundService.mediaSession?.setPlaybackState(PlaybackStateCompat.Builder()
+                        .setActions(PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_PAUSE)
+                        .setState(
+                            PlaybackStateCompat.STATE_STOPPED,
+                            PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                            0f)
+                        .build())
+
                     this@SoundService.stopSelf()
                     this@SoundService.mediaSession?.isActive = false
                     this@SoundService.stopForeground(false)
                 }
+
+                override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+                    Log.d(TAG, "Media Button Event")
+
+                    return false
+                }
+
+
             })
 
             // Set the session's token so that client activities can communicate with it.
@@ -164,6 +205,7 @@ class SoundService : MediaBrowserServiceCompat() {
     }
 
 
+    // ============================================================
     override fun onGetRoot(
         clientPackageName: String,
         clientUid: Int,
@@ -171,6 +213,7 @@ class SoundService : MediaBrowserServiceCompat() {
     ): BrowserRoot? {
         return BrowserRoot("empty_media_root_id", null)
     }
+
 
     override fun onLoadChildren(
         parentId: String,
@@ -180,18 +223,13 @@ class SoundService : MediaBrowserServiceCompat() {
         return
     }
 
-//    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        return super.onStartCommand(intent, flags, startId)
-//    }
-
-//    override fun onBind(intent: Intent): IBinder {
-//        TODO("Return the communication channel to the service.")
-//    }
-
 
     override fun onDestroy() {
         super.onDestroy()
         Log.w(TAG, "Service destroyed")
+        mediaSession?.isActive = false
+        mediaSession?.release()
+
     }
 
 }

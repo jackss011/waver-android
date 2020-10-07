@@ -144,6 +144,8 @@ class MainActivity : AppCompatActivity() {
         val metadata = mediaController.metadata
         val pbState = mediaController.playbackState
 
+        Log.d(TAG, "Initial state: %d".format(pbState.state))
+
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback)
     }
