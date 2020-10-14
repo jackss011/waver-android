@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 
-import android.service.media.MediaBrowserService as MediaBrowserService_Start
 import android.service.media.MediaBrowserService
 
 //import androidx.media.MediaBrowserServiceCompat
@@ -21,58 +20,182 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.*
-import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
-import android.provider.MediaStore
-
-//import androidx.core.app.NotificationCompat
 
 
 const val TAG = "SOUND_SERVICE"
 
-const val NOTIFICATION_ID_MEDIA_CONTROLS = 1
+const val NOTIFICATION_ID_FOREGROUND = 1001
 const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
 
 const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.ACTION_MEDIA_PLAY"
 const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.ACTION_MEDIA_PAUSE"
 const val ACTION_MEDIA_STOP = "com.jack.nars.waver.ACTION_MEDIA_STOP"
 
+
 class SoundService : MediaBrowserService() {
-
     private var mediaSession: MediaSession? = null
-    private lateinit var stateBuilder: PlaybackState.Builder
-//    private var sessionToken: MediaSessionCompat.Token? = null
 
 
+    override fun onCreate() {
+        super.onCreate()
+
+        Log.i(TAG, "Service created")
+
+        setupNotificationChannels()
+
+        registerReceiver(mediaNotificationReceiver, IntentFilter().apply {
+            addAction(ACTION_MEDIA_PLAY)
+            addAction(ACTION_MEDIA_PAUSE)
+            addAction(ACTION_MEDIA_STOP)
+        })
+
+        mediaSession = MediaSession(baseContext, TAG).apply {
+            setPlaybackState(
+                PlaybackState.Builder()
+                    .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
+                    .build()
+            )
+
+            setCallback(mediaSessionCallbacks)
+
+            setSessionActivity(
+                PendingIntent.getActivity(
+                    this@SoundService,
+                    0,
+                    Intent(this@SoundService, MainActivity::class.java),
+                    0
+                )
+            )
+        }
+
+        sessionToken = mediaSession?.sessionToken
+    }
 
 
-    private fun createNotification(): Notification {
+    private val mediaSessionCallbacks = object : MediaSession.Callback() {
+        override fun onPlay() {
+            Log.i(TAG, "Session: Play")
+
+            startService(Intent(this@SoundService, SoundService::class.java))
+            // Set the session active  (and update metadata and state)
+
+            mediaSession?.isActive = true
+
+            // TODO: start the player
+
+            mediaSession?.setPlaybackState(PlaybackState.Builder()
+                .setActions(PlaybackState.ACTION_PAUSE
+                        or PlaybackState.ACTION_STOP
+                        or PlaybackState.ACTION_PLAY_PAUSE)
+                .setState(
+                    PlaybackState.STATE_PLAYING,
+                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+                    1f)
+                .build())
+
+            mediaSession?.setMetadata(MediaMetadata.Builder()
+                .putString(MediaMetadata.METADATA_KEY_TITLE, "Test Title")
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Test Title!")
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
+                .build()
+            )
+
+            // TODO: consider register audio becoming noisy here
+
+            startForeground(NOTIFICATION_ID_FOREGROUND, createForegroundNotification())
+        }
+
+
+        override fun onPause() {
+            Log.i(TAG, "Session: Pause")
+
+            // TODO: pause the player
+
+            this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
+                .setActions(PlaybackState.ACTION_PLAY
+                        or PlaybackState.ACTION_STOP
+                        or PlaybackState.ACTION_PLAY_PAUSE)
+                .setState(
+                    PlaybackState.STATE_PAUSED,
+                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+                    0f)
+                .build())
+
+            this@SoundService.stopForeground(false)
+        }
+
+
+        override fun onStop() {
+            Log.i(TAG, "Session: Stop")
+
+            // TODO: stop the player
+
+            mediaSession?.setPlaybackState(PlaybackState.Builder()
+                .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
+                .setState(
+                    PlaybackState.STATE_STOPPED,
+                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+                    0f)
+                .build())
+
+            stopSelf()
+            mediaSession?.isActive = false
+            stopForeground(false)
+        }
+    }
+
+
+    private val mediaNotificationReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+                Log.d(TAG, "Received: " + (intent?.action ?: "null intent"))
+        }
+    }
+
+
+    private fun setupNotificationChannels() {
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        nm.createNotificationChannel(
+            NotificationChannel(CHANNEL_ID_MEDIA_CONTROLS,
+                "Media Controls", // TODO: use resource string
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Desc"
+                enableVibration(false)
+            }
+        )
+    }
+
+
+    private fun createForegroundNotification(): Notification {
         val controller = mediaSession?.controller
         val mediaMetadata = controller?.metadata
         val description = mediaMetadata?.description
 
-
         val builder = Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
-            // Add the metadata for the currently playing track
-            setContentTitle(getString(R.string.app_name))
-            setContentText("Test")
-            setSubText("SubTest")
-            setLargeIcon(description?.iconBitmap)
+            // add playing info
+            setContentTitle("Content Title") // TODO: find out what names to use
+            setContentText("Content Text") // TODO: ?
+            setSubText("Sub Text")  // TODO: ?
 
+            // add notification icons
+            setSmallIcon(R.drawable.ic_notification)
+            setLargeIcon(description?.iconBitmap) //TODO: add an image representing playback
+
+            // add notification colors
+            setColorized(true)
+            setColor(ContextCompat.getColor(this@SoundService, R.color.colorAccent))
+
+            // hide time and show on lock screen
             setShowWhen(false)
+            setVisibility(Notification.VISIBILITY_PUBLIC)
 
-            if (controller == null)
-                Log.e(TAG, "Controller is not with us")
-            else {
-                Log.i(TAG, "Controller is fine: %s".format(controller.sessionActivity?.javaClass.toString()))
-
-            }
-
-            // Enable launching the player by clicking the notification
+            // notification click
             setContentIntent(controller?.sessionActivity)
 
-            // Stop the service when the notification is swiped away
+            // notification swipe
             setDeleteIntent(
                 MediaButtonReceiver.buildMediaButtonPendingIntent(
                     this@SoundService,
@@ -80,213 +203,60 @@ class SoundService : MediaBrowserService() {
                 )
             )
 
-            // Make the transport controls visible on the lock-screen
-            setVisibility(Notification.VISIBILITY_PUBLIC)
-
-            // Add an app icon and set its accent color
-            // Be careful about the color
-            setSmallIcon(R.drawable.ic_notification)
-//            color = ContextCompat.getColor(this@SoundService, R.color.colorAccent)
-
-            // Add a pause button
-            val pauseIntent = PendingIntent.getBroadcast(this@SoundService,
-                0,
-                Intent(ACTION_MEDIA_PLAY).setPackage(this@SoundService.packageName),
-                0
-            )
-
-
-//                MediaButtonReceiver.buildMediaButtonPendingIntent(
-//                    this@SoundService,
-//                    ComponentName(this@SoundService, this@SoundService::class.java),
-//                    PlaybackStateCompat.ACTION_PLAY_PAUSE
-//                )
-
+            // pause action
             addAction(
                 Notification.Action.Builder(
-                    Icon.createWithResource(this@SoundService, R.drawable.ic_dashboard_black_24dp),
+                    Icon.createWithResource(this@SoundService, R.drawable.ic_notification_pause),
                     "Pause",
-                    pauseIntent
+                    PendingIntent.getBroadcast(this@SoundService,
+                        0,
+                        Intent(ACTION_MEDIA_PAUSE).setPackage(this@SoundService.packageName),
+                        0
+                    )
                 ).build()
             )
 
-            val activityIntent = Intent(this@SoundService, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(
-                this@SoundService,
-                0,
-                activityIntent,
-                0)
-
+            // close action
             addAction(
                 Notification.Action.Builder(
-                    Icon.createWithResource(this@SoundService, R.drawable.ic_home_black_24dp),
+                    Icon.createWithResource(this@SoundService, R.drawable.ic_notification_close),
                     "Stop",
-                    pendingIntent
+                    PendingIntent.getBroadcast(this@SoundService,
+                        0,
+                        Intent(ACTION_MEDIA_STOP).setPackage(this@SoundService.packageName),
+                        0
+                    )
+//                  MediaButtonReceiver.buildMediaButtonPendingIntent(this@SoundService, PlaybackStateCompat.ACTION_STOP)
                 ).build()
             )
-
-            Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
 
             // Take advantage of MediaStyle features
             style = Notification.MediaStyle()
                 .setMediaSession(this@SoundService.mediaSession?.sessionToken)
                 .setShowActionsInCompactView(0)
 
-            setColorized(true)
-            setColor(ContextCompat.getColor(this@SoundService, R.color.colorAccent))
+            Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
 
         return builder.build()
     }
 
 
+    override fun onDestroy() {
+        super.onDestroy()
 
-    override fun onCreate() {
-        super.onCreate()
+        Log.i(TAG, "Service destroyed")
 
-        Log.d(TAG, "Service created")
+        mediaSession?.isActive = false
+        mediaSession?.release()
 
-
-        // Create a MediaSessionCompat
-        mediaSession = MediaSession(baseContext, TAG).apply {
-            // Enable callbacks from MediaButtons and TransportControls
-            setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS
-                    or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
-            )
-
-            Log.d(TAG, "controller: %s".format(controller.toString()))
-
-            // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-            stateBuilder = PlaybackState.Builder()
-                .setActions(
-                    PlaybackState.ACTION_PLAY
-                            or PlaybackState.ACTION_PLAY_PAUSE
-                )
-
-            setPlaybackState(stateBuilder.build())
-
-            // MySessionCallback() has methods that handle callbacks from a media controller
-            setCallback(object : MediaSession.Callback() {
-                override fun onPlay() {
-                    Log.d(TAG, "Session Play")
-
-//                    val am = this@SoundService.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                    startService(Intent(this@SoundService, SoundService::class.java))
-                    // Set the session active  (and update metadata and state)
-
-                    this@apply.isActive = true
-                    // start the player (custom call)
-//                    player.start()
-
-                    this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
-                        .setActions(PlaybackState.ACTION_PAUSE
-                                or PlaybackState.ACTION_STOP
-                                or PlaybackState.ACTION_PLAY_PAUSE)
-                        .setState(
-                            PlaybackState.STATE_PLAYING,
-                            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                        1f)
-                        .build())
-
-                    this@SoundService.mediaSession?.setMetadata(MediaMetadata.Builder()
-                        .putString(MediaMetadata.METADATA_KEY_TITLE, "Test Title")
-                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Test Title!")
-                        .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
-                        .build()
-                        )
-                    // Register BECOME_NOISY BroadcastReceiver
-//                    registerReceiver(myNoisyAudioStreamReceiver, intentFilter)
-                    // Put the service in the foreground, post notification
-                    this@SoundService.startForeground(NOTIFICATION_ID_MEDIA_CONTROLS, createNotification())
-                }
-
-
-                override fun onPause() {
-                    Log.d(TAG, "Session Pause")
-
-                    this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
-                        .setActions(PlaybackState.ACTION_PLAY
-                                or PlaybackState.ACTION_STOP
-                                or PlaybackState.ACTION_PLAY_PAUSE)
-                        .setState(
-                            PlaybackState.STATE_PAUSED,
-                            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                            0f)
-                        .build())
-
-                    this@SoundService.stopForeground(false)
-                }
-
-                override fun onStop() {
-                    Log.d(TAG, "Session Stop")
-
-                    this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
-                        .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
-                        .setState(
-                            PlaybackState.STATE_STOPPED,
-                            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                            0f)
-                        .build())
-
-                    this@SoundService.stopSelf()
-                    this@SoundService.mediaSession?.isActive = false
-                    this@SoundService.stopForeground(false)
-                }
-
-//                override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
-//                    Log.d(TAG, "Media Button Event")
-//
-//                    return false
-//                }
-            })
-
-            // Set the session's token so that client activities can communicate with it.
-            setSessionToken(sessionToken)
-//            this@SoundService.sessionToken = sessionToken
-
-            val activityIntent = Intent(this@SoundService, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(
-                this@SoundService,
-                0,
-                activityIntent,
-                0)
-
-            setSessionActivity(pendingIntent)
-        }
-
-
-        val channel = NotificationChannel(
-            CHANNEL_ID_MEDIA_CONTROLS,
-            "Media Controls",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-
-        channel.description = "Desc"
-        channel.enableVibration(false)
-//        channel.lightColor = Color.CYAN
-        //        chan.lightColor = Color.BLUE
-        //        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(channel)
-
-
-
-//        val actionIntent = Intent(ACTION_MEDIA_TEST)
-        val actionIntentFilter = IntentFilter(ACTION_MEDIA_PLAY)
-
-        actionReceiver = object: BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                Log.d(TAG, "Received")
-            }
-        }
-
-        registerReceiver(actionReceiver, actionIntentFilter)
+        unregisterReceiver(mediaNotificationReceiver)
     }
 
-    private lateinit var actionReceiver: BroadcastReceiver
 
-
-    // ============================================================
+    // ===============================================
+    // ================= UNUSED ======================
+    // ===============================================
     override fun onGetRoot(
         clientPackageName: String,
         clientUid: Int,
@@ -303,16 +273,4 @@ class SoundService : MediaBrowserService() {
         result.sendResult(null)
         return
     }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.w(TAG, "Service destroyed")
-        mediaSession?.isActive = false
-        mediaSession?.release()
-
-        unregisterReceiver(actionReceiver)
-
-    }
-
 }
