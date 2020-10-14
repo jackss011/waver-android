@@ -77,6 +77,21 @@ class SoundService : MediaBrowserService() {
     }
 
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Log.i(TAG, "Service destroyed")
+
+        mediaSession?.isActive = false
+        mediaSession?.release()
+
+        // TODO: release the player
+        testPlayer.release()
+
+        unregisterReceiver(mediaNotificationReceiver)
+    }
+
+
     private val mediaSessionCallbacks = object : MediaSession.Callback() {
         override fun onPlay() {
             Log.i(TAG, "Session: Play")
@@ -151,19 +166,20 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = false
             stopForeground(true)
         }
-
-
-}
+    }
 
 
     private lateinit var testPlayer: AudioLoopBlender  //TODO: update to the actual player
+
 
     private fun setupPlayer() {
         testPlayer = AudioLoopBlender.create(this, R.raw.brown_noise)
     }
 
 
-    // ===============
+    // ===============================================
+    // ================= NOTIFICATIONS ===============
+    // ===============================================
     private val mediaNotificationReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d(TAG, "Received: " + (intent?.action ?: "null intent"))
@@ -285,21 +301,6 @@ class SoundService : MediaBrowserService() {
     private fun updateForegroundNotification() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.notify(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Log.i(TAG, "Service destroyed")
-
-        mediaSession?.isActive = false
-        mediaSession?.release()
-
-        // TODO: release the player
-        testPlayer.release()
-
-        unregisterReceiver(mediaNotificationReceiver)
     }
 
 
