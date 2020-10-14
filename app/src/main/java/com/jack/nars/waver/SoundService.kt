@@ -2,8 +2,6 @@ package com.jack.nars.waver
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 
@@ -22,7 +20,7 @@ import android.media.session.PlaybackState
 import android.support.v4.media.session.PlaybackStateCompat
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.ComponentName
+import android.content.*
 import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
@@ -32,8 +30,13 @@ import android.provider.MediaStore
 
 
 const val TAG = "SOUND_SERVICE"
-const val NOTIFICATION_ID = 1
-const val CHANNEL_ID = "WAVER"
+
+const val NOTIFICATION_ID_MEDIA_CONTROLS = 1
+const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
+
+const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.ACTION_MEDIA_PLAY"
+const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.ACTION_MEDIA_PAUSE"
+const val ACTION_MEDIA_STOP = "com.jack.nars.waver.ACTION_MEDIA_STOP"
 
 class SoundService : MediaBrowserService() {
 
@@ -50,9 +53,9 @@ class SoundService : MediaBrowserService() {
         val description = mediaMetadata?.description
 
 
-        val builder = Notification.Builder(this, CHANNEL_ID).apply {
+        val builder = Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
             // Add the metadata for the currently playing track
-            setContentTitle("Hello")
+            setContentTitle(getString(R.string.app_name))
             setContentText("Test")
             setSubText("SubTest")
             setLargeIcon(description?.iconBitmap)
@@ -82,33 +85,44 @@ class SoundService : MediaBrowserService() {
 
             // Add an app icon and set its accent color
             // Be careful about the color
-            setSmallIcon(R.drawable.ic_notifications_black_24dp)
+            setSmallIcon(R.drawable.ic_notification)
 //            color = ContextCompat.getColor(this@SoundService, R.color.colorAccent)
 
             // Add a pause button
+            val pauseIntent = PendingIntent.getBroadcast(this@SoundService,
+                0,
+                Intent(ACTION_MEDIA_PLAY).setPackage(this@SoundService.packageName),
+                0
+            )
+
+
+//                MediaButtonReceiver.buildMediaButtonPendingIntent(
+//                    this@SoundService,
+//                    ComponentName(this@SoundService, this@SoundService::class.java),
+//                    PlaybackStateCompat.ACTION_PLAY_PAUSE
+//                )
+
             addAction(
                 Notification.Action.Builder(
                     Icon.createWithResource(this@SoundService, R.drawable.ic_dashboard_black_24dp),
                     "Pause",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this@SoundService,
-                        ComponentName(this@SoundService, this@SoundService::class.java),
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    )
+                    pauseIntent
                 ).build()
             )
+
+            val activityIntent = Intent(this@SoundService, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(
+                this@SoundService,
+                0,
+                activityIntent,
+                0)
 
             addAction(
                 Notification.Action.Builder(
                     Icon.createWithResource(this@SoundService, R.drawable.ic_home_black_24dp),
                     "Stop",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this@SoundService,
-                        ComponentName(this@SoundService, this@SoundService::class.java),
-                        PlaybackStateCompat.ACTION_STOP
-                    )
-                )
-                    .build()
+                    pendingIntent
+                ).build()
             )
 
             Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
@@ -183,7 +197,7 @@ class SoundService : MediaBrowserService() {
                     // Register BECOME_NOISY BroadcastReceiver
 //                    registerReceiver(myNoisyAudioStreamReceiver, intentFilter)
                     // Put the service in the foreground, post notification
-                    this@SoundService.startForeground(NOTIFICATION_ID, createNotification())
+                    this@SoundService.startForeground(NOTIFICATION_ID_MEDIA_CONTROLS, createNotification())
                 }
 
 
@@ -224,8 +238,6 @@ class SoundService : MediaBrowserService() {
 //
 //                    return false
 //                }
-
-
             })
 
             // Set the session's token so that client activities can communicate with it.
@@ -242,20 +254,36 @@ class SoundService : MediaBrowserService() {
             setSessionActivity(pendingIntent)
         }
 
+
         val channel = NotificationChannel(
-            CHANNEL_ID,
+            CHANNEL_ID_MEDIA_CONTROLS,
             "Media Controls",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_DEFAULT
         )
 
         channel.description = "Desc"
         channel.enableVibration(false)
-        channel.lightColor = Color.CYAN
+//        channel.lightColor = Color.CYAN
         //        chan.lightColor = Color.BLUE
         //        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(channel)
+
+
+
+//        val actionIntent = Intent(ACTION_MEDIA_TEST)
+        val actionIntentFilter = IntentFilter(ACTION_MEDIA_PLAY)
+
+        actionReceiver = object: BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                Log.d(TAG, "Received")
+            }
+        }
+
+        registerReceiver(actionReceiver, actionIntentFilter)
     }
+
+    private lateinit var actionReceiver: BroadcastReceiver
 
 
     // ============================================================
@@ -282,6 +310,8 @@ class SoundService : MediaBrowserService() {
         Log.w(TAG, "Service destroyed")
         mediaSession?.isActive = false
         mediaSession?.release()
+
+        unregisterReceiver(actionReceiver)
 
     }
 
