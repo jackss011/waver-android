@@ -34,6 +34,8 @@ const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
 const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.ACTION_MEDIA_PLAY"
 const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.ACTION_MEDIA_PAUSE"
 const val ACTION_MEDIA_STOP = "com.jack.nars.waver.ACTION_MEDIA_STOP"
+const val ACTION_MEDIA_UP = "com.jack.nars.waver.ACTION_MEDIA_UP"
+const val ACTION_MEDIA_DOWN = "com.jack.nars.waver.ACTION_MEDIA_DOWN"
 
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 const val EXTRA_MASTER_VOLUME = "EXTRA_MASTER_VOLUME"
@@ -56,6 +58,8 @@ class SoundService : MediaBrowserService() {
             addAction(ACTION_MEDIA_PLAY)
             addAction(ACTION_MEDIA_PAUSE)
             addAction(ACTION_MEDIA_STOP)
+            addAction(ACTION_MEDIA_UP)
+            addAction(ACTION_MEDIA_DOWN)
         })
 
         mediaSession = MediaSession(baseContext, TAG).apply {
@@ -202,6 +206,12 @@ class SoundService : MediaBrowserService() {
                 ACTION_MEDIA_PLAY -> controller?.transportControls?.play()
                 ACTION_MEDIA_PAUSE -> controller?.transportControls?.pause()
                 ACTION_MEDIA_STOP -> controller?.transportControls?.stop()
+                ACTION_MEDIA_UP -> {
+
+                }
+                ACTION_MEDIA_DOWN -> {
+
+                }
             }
         }
     }
@@ -229,6 +239,7 @@ class SoundService : MediaBrowserService() {
 
         val playbackState  = controller?.playbackState?.state
         val isPlaying = playbackState == PlaybackState.STATE_PLAYING
+
 
         return Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
             // add playing info
@@ -259,49 +270,35 @@ class SoundService : MediaBrowserService() {
                 )
             )
 
-            // play/pause action depending on playback state
-            addAction(if (isPlaying)
+            fun addMediaAction(title: String, icon: Int, action: String) {
+                addAction(
                     Notification.Action.Builder(
-                        Icon.createWithResource(this@SoundService, R.drawable.ic_notification_pause),
-                        "Pause",
+                        Icon.createWithResource(this@SoundService, icon),
+                        title,
                         PendingIntent.getBroadcast(this@SoundService,
                             0,
-                            Intent(ACTION_MEDIA_PAUSE).setPackage(this@SoundService.packageName),
+                            Intent(action).setPackage(this@SoundService.packageName),
                             0
                         )
                     ).build()
+                )
+            }
 
-                else
-                    Notification.Action.Builder(
-                        Icon.createWithResource(this@SoundService, R.drawable.ic_notification_play),
-                        "Play",
-                        PendingIntent.getBroadcast(this@SoundService,
-                            0,
-                            Intent(ACTION_MEDIA_PLAY).setPackage(this@SoundService.packageName),
-                            0
-                        )
-                    ).build()
-            )
+            addMediaAction("Volume down", R.drawable.ic_notification_down, ACTION_MEDIA_DOWN)
 
+            if (isPlaying)
+                addMediaAction("Pause", R.drawable.ic_notification_pause, ACTION_MEDIA_PAUSE)
+            else
+                addMediaAction("Play", R.drawable.ic_notification_play, ACTION_MEDIA_PLAY)
 
-            // close action
-            addAction(
-                Notification.Action.Builder(
-                    Icon.createWithResource(this@SoundService, R.drawable.ic_notification_close),
-                    "Stop",
-                    PendingIntent.getBroadcast(this@SoundService,
-                        0,
-                        Intent(ACTION_MEDIA_STOP).setPackage(this@SoundService.packageName),
-                        0
-                    )
-//                  MediaButtonReceiver.buildMediaButtonPendingIntent(this@SoundService, PlaybackStateCompat.ACTION_STOP)
-                ).build()
-            )
+            addMediaAction("Volume up", R.drawable.ic_notification_up, ACTION_MEDIA_UP)
+
+            addMediaAction("Close", R.drawable.ic_notification_close, ACTION_MEDIA_STOP)
 
             // Take advantage of MediaStyle features
             style = Notification.MediaStyle()
                 .setMediaSession(this@SoundService.mediaSession?.sessionToken)
-                .setShowActionsInCompactView(0, 1)
+                .setShowActionsInCompactView(*intArrayOf(0, 1, 2))
 
             Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
