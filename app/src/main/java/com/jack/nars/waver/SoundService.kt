@@ -104,7 +104,7 @@ class SoundService : MediaBrowserService() {
 
             // TODO: consider register audio becoming noisy here
 
-            startForeground(NOTIFICATION_ID_FOREGROUND, createForegroundNotification())
+            startForeground(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
         }
 
 
@@ -169,12 +169,12 @@ class SoundService : MediaBrowserService() {
     }
 
 
-    private fun createForegroundNotification(): Notification {
+    private fun getForegroundNotificationBuilder(): Notification.Builder {
         val controller = mediaSession?.controller
         val mediaMetadata = controller?.metadata
         val description = mediaMetadata?.description
 
-        val builder = Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
+        return Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
             // add playing info
             setContentTitle("Content Title") // TODO: find out what names to use
             setContentText("Content Text") // TODO: ?
@@ -237,8 +237,6 @@ class SoundService : MediaBrowserService() {
 
             Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
-
-        return builder.build()
     }
 
 
