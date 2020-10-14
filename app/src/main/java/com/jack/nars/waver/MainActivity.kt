@@ -9,10 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.SeekBar
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowser
+    private lateinit var volumeSeek: SeekBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +82,25 @@ class MainActivity : AppCompatActivity() {
                     PlaybackState.STATE_STOPPED -> mediaController.transportControls.play()
                 }
             }
+        }
+
+        volumeSeek = findViewById<SeekBar>(R.id.volume_bar).apply {
+            setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    bar?.also {
+                        val v = progress.toFloat() / it.max
+                        mediaController.sendCommand(
+                            COMMAND_MASTER_VOLUME,
+                            Bundle(1).apply { putFloat(null, v) },
+                            null
+                        )
+                    }
+                }
+
+                override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+                override fun onStopTrackingTouch(p0: SeekBar?) {}
+            })
         }
 
         updatePlaybackState()

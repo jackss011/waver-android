@@ -22,6 +22,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
+import android.os.ResultReceiver
 import com.jack.nars.waver.sound.AudioLoopBlender
 
 
@@ -33,6 +34,9 @@ const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
 const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.ACTION_MEDIA_PLAY"
 const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.ACTION_MEDIA_PAUSE"
 const val ACTION_MEDIA_STOP = "com.jack.nars.waver.ACTION_MEDIA_STOP"
+
+const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
+const val EXTRA_MASTER_VOLUME = "EXTRA_MASTER_VOLUME"
 
 
 class SoundService : MediaBrowserService() {
@@ -115,8 +119,8 @@ class SoundService : MediaBrowserService() {
                 .build())
 
             mediaSession?.setMetadata(MediaMetadata.Builder()
-                .putString(MediaMetadata.METADATA_KEY_TITLE, "Test Title")
-                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Test Title!")
+                .putString(MediaMetadata.METADATA_KEY_TITLE, "Brown Noise")
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Brown Noise")
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
                 .build()
             )
@@ -166,8 +170,14 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = false
             stopForeground(true)
         }
-    }
 
+
+        override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
+            when(command) {
+                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { testPlayer.setVolume(it) }
+            }
+        }
+    }
 
     private lateinit var testPlayer: AudioLoopBlender  //TODO: update to the actual player
 
@@ -222,9 +232,9 @@ class SoundService : MediaBrowserService() {
 
         return Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
             // add playing info
-            setContentTitle("White Noise") // TODO: find out what names to use
-            setContentText(null) // TODO: ?
-            setSubText(if (isPlaying) "Playing" else "Paused")  // TODO: use resource
+            setContentTitle(description?.title) // TODO: find out what names to use
+            setSubText(null) // TODO: ?
+            setContentText(if (isPlaying) "Playing" else "Paused")  // TODO: use resource
 
             // add notification icons
             setSmallIcon(R.drawable.ic_notification)
