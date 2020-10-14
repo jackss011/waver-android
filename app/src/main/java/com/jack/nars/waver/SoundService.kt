@@ -22,6 +22,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
+import com.jack.nars.waver.sound.AudioLoopBlender
 
 
 const val TAG = "SOUND_SERVICE"
@@ -42,6 +43,8 @@ class SoundService : MediaBrowserService() {
         super.onCreate()
 
         Log.i(TAG, "Service created")
+
+        setupPlayer()
 
         setupNotificationChannels()
 
@@ -84,6 +87,7 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = true
 
             // TODO: start the player
+            testPlayer.start()
 
             mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PAUSE
@@ -112,6 +116,7 @@ class SoundService : MediaBrowserService() {
             Log.i(TAG, "Session: Pause")
 
             // TODO: pause the player
+            testPlayer.pause()
 
             this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY
@@ -123,6 +128,7 @@ class SoundService : MediaBrowserService() {
                     0f)
                 .build())
 
+            updateForegroundNotification()
             this@SoundService.stopForeground(false)
         }
 
@@ -131,6 +137,7 @@ class SoundService : MediaBrowserService() {
             Log.i(TAG, "Session: Stop")
 
             // TODO: stop the player
+            testPlayer.pause()
 
             mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
@@ -142,14 +149,34 @@ class SoundService : MediaBrowserService() {
 
             stopSelf()
             mediaSession?.isActive = false
-            stopForeground(false)
+            stopForeground(true)
         }
+
+
+}
+
+
+    private lateinit var testPlayer: AudioLoopBlender  //TODO: update to the actual player
+
+    private fun setupPlayer() {
+        testPlayer = AudioLoopBlender.create(this, R.raw.brown_noise)
     }
 
 
+    // ===============
     private val mediaNotificationReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "Received: " + (intent?.action ?: "null intent"))
+            Log.d(TAG, "Received: " + (intent?.action ?: "null intent"))
+
+            val controller = mediaSession?.controller.apply {
+                if (this == null) Log.w(TAG, "null controller on notification button press")
+            }
+
+            when(intent?.action) {
+                ACTION_MEDIA_PLAY -> controller?.transportControls?.play()
+                ACTION_MEDIA_PAUSE -> controller?.transportControls?.pause()
+                ACTION_MEDIA_STOP -> controller?.transportControls?.stop()
+            }
         }
     }
 
@@ -174,11 +201,14 @@ class SoundService : MediaBrowserService() {
         val mediaMetadata = controller?.metadata
         val description = mediaMetadata?.description
 
+        val playbackState  = controller?.playbackState?.state
+        val isPlaying = playbackState == PlaybackState.STATE_PLAYING
+
         return Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
             // add playing info
-            setContentTitle("Content Title") // TODO: find out what names to use
-            setContentText("Content Text") // TODO: ?
-            setSubText("Sub Text")  // TODO: ?
+            setContentTitle("White Noise") // TODO: find out what names to use
+            setContentText(null) // TODO: ?
+            setSubText(if (isPlaying) "Playing" else "Paused")  // TODO: use resource
 
             // add notification icons
             setSmallIcon(R.drawable.ic_notification)
@@ -203,18 +233,30 @@ class SoundService : MediaBrowserService() {
                 )
             )
 
-            // pause action
-            addAction(
-                Notification.Action.Builder(
-                    Icon.createWithResource(this@SoundService, R.drawable.ic_notification_pause),
-                    "Pause",
-                    PendingIntent.getBroadcast(this@SoundService,
-                        0,
-                        Intent(ACTION_MEDIA_PAUSE).setPackage(this@SoundService.packageName),
-                        0
-                    )
-                ).build()
+            // play/pause action depending on playback state
+            addAction(if (isPlaying)
+                    Notification.Action.Builder(
+                        Icon.createWithResource(this@SoundService, R.drawable.ic_notification_pause),
+                        "Pause",
+                        PendingIntent.getBroadcast(this@SoundService,
+                            0,
+                            Intent(ACTION_MEDIA_PAUSE).setPackage(this@SoundService.packageName),
+                            0
+                        )
+                    ).build()
+
+                else
+                    Notification.Action.Builder(
+                        Icon.createWithResource(this@SoundService, R.drawable.ic_notification_play),
+                        "Play",
+                        PendingIntent.getBroadcast(this@SoundService,
+                            0,
+                            Intent(ACTION_MEDIA_PLAY).setPackage(this@SoundService.packageName),
+                            0
+                        )
+                    ).build()
             )
+
 
             // close action
             addAction(
@@ -233,10 +275,16 @@ class SoundService : MediaBrowserService() {
             // Take advantage of MediaStyle features
             style = Notification.MediaStyle()
                 .setMediaSession(this@SoundService.mediaSession?.sessionToken)
-                .setShowActionsInCompactView(0)
+                .setShowActionsInCompactView(0, 1)
 
             Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
+    }
+
+
+    private fun updateForegroundNotification() {
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.notify(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
     }
 
 
@@ -247,6 +295,9 @@ class SoundService : MediaBrowserService() {
 
         mediaSession?.isActive = false
         mediaSession?.release()
+
+        // TODO: release the player
+        testPlayer.release()
 
         unregisterReceiver(mediaNotificationReceiver)
     }

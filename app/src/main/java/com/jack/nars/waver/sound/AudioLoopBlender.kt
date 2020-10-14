@@ -192,6 +192,10 @@ class AudioLoopBlender {
             playerB.pause()
     }
 
+    fun release() {
+
+    }
+
     private var volume: Float = 1f
 
     fun setVolume(v: Float) {
