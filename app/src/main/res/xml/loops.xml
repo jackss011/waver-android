@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<loops xmlns:android="http://schemas.android.com/apk/res/android">
+    <loop id="test:ambient_music"
+            title="Ambient Music"
+            description=""
+            mode="crossfade">
+        <source type="resource" id="@raw/ambient_loop"/>
+    </loop>
+
+    <loop id="test:brown_noise"
+            title="Brown Noise"
+            description=""
+            mode="seamless">
+        <source type="res" id="@raw/brown_noise"/>
+    </loop>
+</loops>
