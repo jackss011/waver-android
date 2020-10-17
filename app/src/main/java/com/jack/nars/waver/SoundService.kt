@@ -23,7 +23,10 @@ import android.content.*
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
 import android.os.ResultReceiver
+import com.jack.nars.waver.players.Loop
+import com.jack.nars.waver.players.SeamlessLoopPlayer
 import com.jack.nars.waver.sound.AudioLoopBlender
+import com.jack.nars.waver.sound.AudioLoopPlayer
 
 
 const val TAG = "SOUND_SERVICE"
@@ -94,7 +97,7 @@ class SoundService : MediaBrowserService() {
         mediaSession?.release()
 
         // TODO: release the player
-        testPlayer.release()
+//        testPlayer.release()
 
         unregisterReceiver(mediaNotificationReceiver)
     }
@@ -110,7 +113,7 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = true
 
             // TODO: start the player
-            testPlayer.start()
+            testPlayer.play()
 
             mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PAUSE
@@ -178,16 +181,20 @@ class SoundService : MediaBrowserService() {
 
         override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
             when(command) {
-                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { testPlayer.setVolume(it) }
+//                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { testPlayer.volume = it }
             }
         }
     }
 
-    private lateinit var testPlayer: AudioLoopBlender  //TODO: update to the actual player
+    private lateinit var testPlayer: SeamlessLoopPlayer  //TODO: update to the actual player
 
 
     private fun setupPlayer() {
-        testPlayer = AudioLoopBlender.create(this, R.raw.brown_noise)
+        testPlayer = SeamlessLoopPlayer(this).apply {
+            prepare(Loop.Res(R.raw.brown_noise))
+        }
+
+//        testPlayer = AudioLoopPlayer.create(this, R.raw.brown_noise)
     }
 
 

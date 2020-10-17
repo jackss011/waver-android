@@ -1,6 +1,8 @@
 package com.jack.nars.waver.players
 
-class PlayersMesh {
+import android.content.Context
+
+class PlayersMesh(val context: Context) {
     private val loops = mutableMapOf<String, Loop>()
     private val players = mutableMapOf<String, Player>()
 
@@ -13,10 +15,11 @@ class PlayersMesh {
     fun addLoop(loop: Loop) {
         if (loops.containsKey(loop.id)) return
 
-        val player = when(loop.mode) {
-            Loop.Mode.CROSSFADE -> CrossfadeLoopPlayer()
-            Loop.Mode.SEAMLESS -> SeamlessLoopPlayer()
-        }
+//        val player = when(loop.mode) {
+//            Loop.Mode.CROSSFADE -> CrossfadeLoopPlayer(context)
+//            Loop.Mode.SEAMLESS -> SeamlessLoopPlayer(context)
+//        }
+        val player = CrossfadeLoopPlayer(context)
 
         loops[loop.id] = loop
         players[loop.id] = player
