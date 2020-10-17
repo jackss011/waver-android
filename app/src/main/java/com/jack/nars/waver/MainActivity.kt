@@ -2,6 +2,7 @@ package com.jack.nars.waver
 
 import android.content.ComponentName
 import android.media.MediaMetadata
+import android.media.MediaPlayer
 import android.media.browse.MediaBrowser
 import android.media.session.MediaController
 import android.media.session.PlaybackState
@@ -10,7 +11,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
+import org.xmlpull.v1.XmlPullParser
 
+
+const val tag: String = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowser
@@ -27,6 +31,22 @@ class MainActivity : AppCompatActivity() {
             mediaBrowserCallbacks,
             null
         )
+
+        val parser = resources.getXml(R.xml.loops)
+
+        while(true) {
+            val n = parser.next()
+            if(n == XmlPullParser.END_DOCUMENT) break
+
+            if(n == XmlPullParser.START_TAG) {
+                if (parser.attributeCount > 0) {
+                    val id = parser.getAttributeResourceValue(0, R.string.title_home)
+                    if(id > 0)
+                        Log.d(tag, parser.getAttributeName(0) + ": " + resources.getResourceName(id))
+                }
+            }
+
+        }
     }
 
 
