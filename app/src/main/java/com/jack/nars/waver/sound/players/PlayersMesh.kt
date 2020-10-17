@@ -1,8 +1,15 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver.sound.players
 
 import android.content.Context
+import android.util.Log
+import com.jack.nars.waver.sound.CompositionData
+import com.jack.nars.waver.sound.Loop
+
 
 class PlayersMesh(val context: Context) {
+    val TAG = "PlayersMesh"
+
+
     private val loops = mutableMapOf<String, Loop>()
     private val players = mutableMapOf<String, Player>()
 
@@ -29,7 +36,10 @@ class PlayersMesh(val context: Context) {
 
 
     fun play() {
-        (composition ?: return).loops.map { it.id }.forEach { players[it]?.play() }
+        (composition ?: return).loops.map { it.id }.forEach {
+            players[it]?.play()
+            Log.d(TAG, "Playing 1")
+        }
         isPlaying = true
     }
 
@@ -49,20 +59,45 @@ class PlayersMesh(val context: Context) {
 
 
     fun updateComposition(new: CompositionData) {
+//        new.loops.forEach { if(it.id !in players.keys) Log.e("MeshPlayer", "Missing loop")}
+        Log.d(TAG, "Composition:")
+        new.loops.forEach { Log.i(TAG, it.id) }
+
+        Log.d(TAG, "Players:")
+        players.keys.forEach { Log.i(TAG, it) }
+
+
         // copy old list
-        val old = (this.composition ?: return)
+        val old = this.composition
         this.composition = new
 
         // remove old loops
-        val oldIds = old.loops.map { it.id }
-        val newIds = new.loops.map { it.id }
-        val removed = (oldIds - newIds)
-        removed.forEach { players[it]?.pause() }
+        if(old != null) {
+            val oldIds = old.loops.map { it.id }
+            val newIds = new.loops.map { it.id }
+            val removed = (oldIds - newIds)
+            removed.forEach { players[it]?.pause() }
+        }
 
         // set all new loop's volume
-        new.loops.forEach { players[it.id]?.volume = it.volume}
+        updateVolumes()
 
         // play all new loops
         if (isPlaying) new.loops.forEach { players[it.id]?.play() }
     }
+
+
+    private fun updateVolumes() {
+        (this.composition ?: return).loops.forEach {
+            players[it.id]?.volume = it.volume * masterVolume
+        }
+    }
+
+
+    var masterVolume = 1f
+        set(value) {
+            field = value
+
+            updateVolumes()
+        }
 }

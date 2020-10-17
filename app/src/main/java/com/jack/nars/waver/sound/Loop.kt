@@ -1,8 +1,9 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver.sound
 
 import android.content.Context
 import android.content.res.Resources
 import android.media.MediaPlayer
+import com.jack.nars.waver.sound.players.Player
 import java.util.*
 
 
@@ -32,7 +33,7 @@ data class Loop(
 
             companion object {
                 fun fromString(str: String): Type {
-                    return Type.valueOf(str.toUpperCase(Locale.ROOT))
+                    return valueOf(str.toUpperCase(Locale.ROOT))
                 }
             }
 

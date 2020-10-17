@@ -1,10 +1,7 @@
-package com.jack.nars.waver.sound
+package com.jack.nars.waver.old
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.widget.Toast
-import kotlin.math.max
-import kotlin.math.min
 
 class AudioLoopPlayer {
     companion object {

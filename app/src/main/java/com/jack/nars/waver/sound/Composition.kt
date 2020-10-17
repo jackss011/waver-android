@@ -1,4 +1,4 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver.sound
 
 import kotlinx.serialization.Serializable
 

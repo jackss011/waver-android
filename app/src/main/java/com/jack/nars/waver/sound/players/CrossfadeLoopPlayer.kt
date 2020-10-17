@@ -1,4 +1,4 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver.sound.players
 
 import android.content.Context
 import android.media.MediaPlayer
@@ -6,7 +6,7 @@ import android.media.VolumeShaper
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.jack.nars.waver.sound.TAG
+import com.jack.nars.waver.old.TAG
 
 
 class CrossfadeLoopPlayer(context: Context) : Player(context) {
@@ -26,8 +26,15 @@ class CrossfadeLoopPlayer(context: Context) : Player(context) {
 
         monitor = Handler(Looper.getMainLooper())
 
-        playerA = buildMediaPlayer()
-        playerB = buildMediaPlayer()
+        fun setupPlayer(): MediaPlayer {
+            val mp = buildMediaPlayer()
+            provider.setAsDataSource(context, mp)
+            mp.prepare()
+            return mp
+        }
+
+        playerA = setupPlayer()
+        playerB = setupPlayer()
 
         playerA.apply {
             setOnCompletionListener {
@@ -87,6 +94,7 @@ class CrossfadeLoopPlayer(context: Context) : Player(context) {
     }
 
 
+    @Suppress("UNUSED_PARAMETER")
     override var isPlaying: Boolean
         get() = playerA.isPlaying || playerB.isPlaying
         set(value) {}
@@ -109,6 +117,7 @@ class CrossfadeLoopPlayer(context: Context) : Player(context) {
     private var shaperB: VolumeShaper? = null
     private var shaperStartRequired = false
 
+
     private fun configRaise(): VolumeShaper.Configuration {
         return VolumeShaper.Configuration.Builder()
             .setCurve(floatArrayOf(0f, 0.1f, 0.3f, 0.5f, 1f),  floatArrayOf(0f, 0.316f, 0.546f, 0.7f, 1f))
@@ -116,6 +125,7 @@ class CrossfadeLoopPlayer(context: Context) : Player(context) {
             .setDuration(blendDuration.toLong())
             .build()
     }
+
 
     private fun configFall(): VolumeShaper.Configuration {
         return VolumeShaper.Configuration.Builder(configRaise())

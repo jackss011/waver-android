@@ -1,7 +1,8 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver.sound.players
 
 import android.content.Context
 import android.media.MediaPlayer
+
 
 abstract class Player(val context: Context) {
     interface SourceProvider {

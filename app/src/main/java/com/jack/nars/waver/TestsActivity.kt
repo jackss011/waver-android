@@ -18,7 +18,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import com.jack.nars.waver.sound.AudioLoopBlender
+import com.jack.nars.waver.old.AudioLoopBlender
 import kotlin.math.pow
 
 class TestsActivity : AppCompatActivity() {

@@ -23,10 +23,10 @@ import android.content.*
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
 import android.os.ResultReceiver
-import com.jack.nars.waver.players.Loop
-import com.jack.nars.waver.players.SeamlessLoopPlayer
-import com.jack.nars.waver.sound.AudioLoopBlender
-import com.jack.nars.waver.sound.AudioLoopPlayer
+import com.jack.nars.waver.sound.CompositionData
+import com.jack.nars.waver.sound.CompositionItem
+import com.jack.nars.waver.sound.LoopLoader
+import com.jack.nars.waver.sound.players.*
 
 
 const val TAG = "SOUND_SERVICE"
@@ -41,7 +41,6 @@ const val ACTION_MEDIA_UP = "com.jack.nars.waver.ACTION_MEDIA_UP"
 const val ACTION_MEDIA_DOWN = "com.jack.nars.waver.ACTION_MEDIA_DOWN"
 
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
-const val EXTRA_MASTER_VOLUME = "EXTRA_MASTER_VOLUME"
 
 
 class SoundService : MediaBrowserService() {
@@ -97,7 +96,7 @@ class SoundService : MediaBrowserService() {
         mediaSession?.release()
 
         // TODO: release the player
-//        testPlayer.release()
+        playersMesh.release()
 
         unregisterReceiver(mediaNotificationReceiver)
     }
@@ -113,7 +112,7 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = true
 
             // TODO: start the player
-            testPlayer.play()
+            playersMesh.play()
 
             mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PAUSE
@@ -142,7 +141,7 @@ class SoundService : MediaBrowserService() {
             Log.i(TAG, "Session: Pause")
 
             // TODO: pause the player
-            testPlayer.pause()
+            playersMesh.pause()
 
             this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY
@@ -163,7 +162,7 @@ class SoundService : MediaBrowserService() {
             Log.i(TAG, "Session: Stop")
 
             // TODO: stop the player
-            testPlayer.pause()
+            playersMesh.pause()
 
             mediaSession?.setPlaybackState(PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
@@ -181,20 +180,28 @@ class SoundService : MediaBrowserService() {
 
         override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
             when(command) {
-//                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { testPlayer.volume = it }
+                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { playersMesh.masterVolume = it }
             }
         }
     }
 
-    private lateinit var testPlayer: SeamlessLoopPlayer  //TODO: update to the actual player
+
+    private lateinit var playersMesh: PlayersMesh
 
 
     private fun setupPlayer() {
-        testPlayer = SeamlessLoopPlayer(this).apply {
-            prepare(Loop.Res(R.raw.brown_noise))
+        playersMesh = PlayersMesh(this)
+
+        LoopLoader.getAllLoops(this).forEach {
+            Log.d("LoopLoader", it.id)
+            playersMesh.addLoop(it)
         }
 
-//        testPlayer = AudioLoopPlayer.create(this, R.raw.brown_noise)
+        val testComposition = CompositionData(loops = listOf(
+            CompositionItem("test:brown_noise", 0.5f),
+            CompositionItem("test:ambient_music", volume = 0.3f)
+        ))
+        playersMesh.updateComposition(testComposition)
     }
 
 
@@ -291,18 +298,17 @@ class SoundService : MediaBrowserService() {
                 )
             }
 
+            // notification buttons
             addMediaAction("Volume down", R.drawable.ic_notification_down, ACTION_MEDIA_DOWN)
-
             if (isPlaying)
                 addMediaAction("Pause", R.drawable.ic_notification_pause, ACTION_MEDIA_PAUSE)
             else
                 addMediaAction("Play", R.drawable.ic_notification_play, ACTION_MEDIA_PLAY)
-
             addMediaAction("Volume up", R.drawable.ic_notification_up, ACTION_MEDIA_UP)
-
             addMediaAction("Close", R.drawable.ic_notification_close, ACTION_MEDIA_STOP)
 
             // Take advantage of MediaStyle features
+            @Suppress("RemoveRedundantSpreadOperator")
             style = Notification.MediaStyle()
                 .setMediaSession(this@SoundService.mediaSession?.sessionToken)
                 .setShowActionsInCompactView(*intArrayOf(0, 1, 2))
