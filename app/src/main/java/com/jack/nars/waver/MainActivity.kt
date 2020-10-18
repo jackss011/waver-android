@@ -11,6 +11,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
+import com.jack.nars.waver.sound.CompositionData
+import com.jack.nars.waver.sound.CompositionItem
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import org.xmlpull.v1.XmlPullParser
 
 
@@ -94,12 +98,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildTransportControls() {
         playPauseButton = findViewById<Button>(R.id.play_pause).apply {
+            fun play() {
+                val testComposition = CompositionData(loops = listOf(
+                    CompositionItem("test:brown_noise", 0.5f),
+                    CompositionItem("test:ambient_music", volume = 0.3f)
+                ))
+
+                mediaController.transportControls.playFromMediaId(Json.encodeToString(testComposition), null)
+            }
+
             setOnClickListener {
                 when (mediaController.playbackState?.state) {
                     PlaybackState.STATE_PLAYING -> mediaController.transportControls.pause()
-                    PlaybackState.STATE_PAUSED -> mediaController.transportControls.play()
-                    PlaybackState.STATE_NONE -> mediaController.transportControls.play()
-                    PlaybackState.STATE_STOPPED -> mediaController.transportControls.play()
+                    PlaybackState.STATE_PAUSED -> play()
+                    PlaybackState.STATE_NONE -> play()
+                    PlaybackState.STATE_STOPPED -> Log.w(TAG, "Can't play from stopped state")
                 }
             }
         }

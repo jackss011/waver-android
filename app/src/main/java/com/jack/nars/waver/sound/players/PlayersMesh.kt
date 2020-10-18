@@ -13,7 +13,8 @@ class PlayersMesh(val context: Context) {
     private val loops = mutableMapOf<String, Loop>()
     private val players = mutableMapOf<String, Player>()
 
-    private var composition: CompositionData? = null
+    var composition: CompositionData? = null
+        private set
 
     var isPlaying = false
         private set

@@ -22,11 +22,13 @@ import android.app.PendingIntent
 import android.content.*
 import android.graphics.drawable.Icon
 import android.media.MediaMetadata
+import android.os.IBinder
 import android.os.ResultReceiver
 import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.CompositionItem
 import com.jack.nars.waver.sound.LoopLoader
 import com.jack.nars.waver.sound.players.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 
 const val TAG = "SOUND_SERVICE"
@@ -102,56 +104,80 @@ class SoundService : MediaBrowserService() {
     }
 
 
-    private val mediaSessionCallbacks = object : MediaSession.Callback() {
-        override fun onPlay() {
-            Log.i(TAG, "Session: Play")
+    private val playStateBuilder = PlaybackState.Builder()
+        .setActions(PlaybackState.ACTION_PAUSE
+        or PlaybackState.ACTION_STOP
+        or PlaybackState.ACTION_PLAY_PAUSE)
+        .setState(
+        PlaybackState.STATE_PLAYING,
+        PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+        1f)
 
+
+    private val pauseStateBuilder = PlaybackState.Builder()
+        .setActions(PlaybackState.ACTION_PLAY
+                or PlaybackState.ACTION_STOP
+                or PlaybackState.ACTION_PLAY_PAUSE)
+        .setState(
+            PlaybackState.STATE_PAUSED,
+            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+            0f)
+
+
+    private val stopStateBuilder = PlaybackState.Builder()
+        .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
+        .setState(
+            PlaybackState.STATE_STOPPED,
+            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+            0f)
+
+
+    private fun metadataBuilder(composition: CompositionData) = MediaMetadata.Builder()
+        .putString(MediaMetadata.METADATA_KEY_TITLE, "Brown Noise")
+        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Brown Noise")
+        .putString(MediaMetadata.METADATA_KEY_ALBUM, getString(R.string.app_name))
+        .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, getString(R.string.app_name))
+        .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
+
+
+    private val mediaSessionCallbacks = object : MediaSession.Callback() {
+        fun enterPlay(composition: CompositionData) {
             startService(Intent(this@SoundService, SoundService::class.java))
-            // Set the session active  (and update metadata and state)
 
             mediaSession?.isActive = true
-
-            // TODO: start the player
             playersMesh.play()
-
-            mediaSession?.setPlaybackState(PlaybackState.Builder()
-                .setActions(PlaybackState.ACTION_PAUSE
-                        or PlaybackState.ACTION_STOP
-                        or PlaybackState.ACTION_PLAY_PAUSE)
-                .setState(
-                    PlaybackState.STATE_PLAYING,
-                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                    1f)
-                .build())
-
-            mediaSession?.setMetadata(MediaMetadata.Builder()
-                .putString(MediaMetadata.METADATA_KEY_TITLE, "Brown Noise")
-                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Brown Noise")
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
-                .build()
-            )
-
-            // TODO: consider register audio becoming noisy here
+            mediaSession?.setPlaybackState(playStateBuilder.build())
+            mediaSession?.setMetadata(metadataBuilder(composition).build())
 
             startForeground(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
+            // TODO: consider register audio becoming noisy here
+        }
+
+
+        override fun onPlay() {
+            Log.i(TAG, "Session: Play")
+            if(playersMesh.composition == null)
+                Log.w(TAG, "Trying to play with no compostion")
+
+            enterPlay(playersMesh.composition ?: return)
+        }
+
+
+        override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+            Log.i(TAG, "Session: Play from Id")
+
+            val composition = Json.decodeFromString<CompositionData>(mediaId ?: return)
+
+            playersMesh.updateComposition(composition)
+            enterPlay(composition)
         }
 
 
         override fun onPause() {
             Log.i(TAG, "Session: Pause")
 
-            // TODO: pause the player
             playersMesh.pause()
-
-            this@SoundService.mediaSession?.setPlaybackState(PlaybackState.Builder()
-                .setActions(PlaybackState.ACTION_PLAY
-                        or PlaybackState.ACTION_STOP
-                        or PlaybackState.ACTION_PLAY_PAUSE)
-                .setState(
-                    PlaybackState.STATE_PAUSED,
-                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                    0f)
-                .build())
+            this@SoundService.mediaSession?.setPlaybackState(pauseStateBuilder.build())
 
             updateForegroundNotification()
             this@SoundService.stopForeground(false)
@@ -161,16 +187,8 @@ class SoundService : MediaBrowserService() {
         override fun onStop() {
             Log.i(TAG, "Session: Stop")
 
-            // TODO: stop the player
             playersMesh.pause()
-
-            mediaSession?.setPlaybackState(PlaybackState.Builder()
-                .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
-                .setState(
-                    PlaybackState.STATE_STOPPED,
-                    PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                    0f)
-                .build())
+            mediaSession?.setPlaybackState(stopStateBuilder.build())
 
             stopSelf()
             mediaSession?.isActive = false
@@ -197,11 +215,11 @@ class SoundService : MediaBrowserService() {
             playersMesh.addLoop(it)
         }
 
-        val testComposition = CompositionData(loops = listOf(
-            CompositionItem("test:brown_noise", 0.5f),
-            CompositionItem("test:ambient_music", volume = 0.3f)
-        ))
-        playersMesh.updateComposition(testComposition)
+//        val testComposition = CompositionData(loops = listOf(
+//            CompositionItem("test:brown_noise", 0.5f),
+//            CompositionItem("test:ambient_music", volume = 0.3f)
+//        ))
+//        playersMesh.updateComposition(testComposition)
     }
 
 
@@ -342,5 +360,12 @@ class SoundService : MediaBrowserService() {
     ) {
         result.sendResult(null)
         return
+    }
+
+
+    override fun onBind(intent: Intent?): IBinder? {
+        Log.i(TAG, "Bound to ?")
+
+        return super.onBind(intent)
     }
 }
