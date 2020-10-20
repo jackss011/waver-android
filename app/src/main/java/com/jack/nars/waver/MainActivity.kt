@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.SeekBar
+import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.sound.CompositionData
 import com.jack.nars.waver.sound.CompositionItem
 import kotlinx.serialization.json.Json
@@ -17,13 +18,14 @@ import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var mediaBrowser: MediaBrowser
-    private lateinit var volumeSeek: SeekBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         mediaBrowser = MediaBrowser(
             this,
@@ -75,11 +77,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private lateinit var playPauseButton: Button
-
-
     private fun buildTransportControls() {
-        playPauseButton = findViewById<Button>(R.id.play_pause).apply {
+        binding.playPause.apply {
             fun play() {
                 val testComposition = CompositionData(loops = listOf(
                     CompositionItem("test:brown_noise", 0.5f),
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        volumeSeek = findViewById<SeekBar>(R.id.volume_bar).apply {
+        binding.volumeBar.apply {
             setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
                     bar?.also {
@@ -125,8 +124,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updatePlaybackState() {
         if(mediaController.playbackState?.state != PlaybackState.STATE_PLAYING)
-            playPauseButton.text = "Play"
+            binding.playPause.text = "Play"
         else
-            playPauseButton.text = "Pause"
+            binding.playPause.text = "Pause"
     }
 }
