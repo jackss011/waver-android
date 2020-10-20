@@ -2,23 +2,19 @@ package com.jack.nars.waver
 
 import android.content.ComponentName
 import android.media.MediaMetadata
-import android.media.MediaPlayer
 import android.media.browse.MediaBrowser
 import android.media.session.MediaController
 import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
 import com.jack.nars.waver.sound.CompositionData
 import com.jack.nars.waver.sound.CompositionItem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
-import org.xmlpull.v1.XmlPullParser
+import timber.log.Timber
 
-
-const val tag: String = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowser
@@ -35,22 +31,6 @@ class MainActivity : AppCompatActivity() {
             mediaBrowserCallbacks,
             null
         )
-
-        val parser = resources.getXml(R.xml.loops)
-
-        while(true) {
-            val n = parser.next()
-            if(n == XmlPullParser.END_DOCUMENT) break
-
-            if(n == XmlPullParser.START_TAG) {
-                if (parser.attributeCount > 0) {
-                    val id = parser.getAttributeResourceValue(0, R.string.title_home)
-                    if(id > 0)
-                        Log.d(tag, parser.getAttributeName(0) + ": " + resources.getResourceName(id))
-                }
-            }
-
-        }
     }
 
 
@@ -71,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mediaBrowserCallbacks = object : MediaBrowser.ConnectionCallback() {
         override fun onConnected() {
-            Log.d(TAG, "Media Service connected")
+            Timber.d("Media Service connected")
 
             mediaController = MediaController(this@MainActivity, mediaBrowser.sessionToken)
             buildTransportControls()
@@ -82,13 +62,13 @@ class MainActivity : AppCompatActivity() {
 
     private val controllerCallback = object : MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            Log.d(TAG, "State changed")
+            Timber.i("Playback state changed")
 
             updatePlaybackState()
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            Log.d(TAG, "Metadata changed")
+            Timber.i("Metadata changed")
         }
     }
 
@@ -112,7 +92,8 @@ class MainActivity : AppCompatActivity() {
                     PlaybackState.STATE_PLAYING -> mediaController.transportControls.pause()
                     PlaybackState.STATE_PAUSED -> play()
                     PlaybackState.STATE_NONE -> play()
-                    PlaybackState.STATE_STOPPED -> Log.w(TAG, "Can't play from stopped state")
+                    PlaybackState.STATE_STOPPED -> Timber.w("Can't play from stopped state")
+                    else -> {}
                 }
             }
         }
