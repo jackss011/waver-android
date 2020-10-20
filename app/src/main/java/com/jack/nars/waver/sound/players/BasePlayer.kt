@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 
 
-abstract class Player(val context: Context) {
+abstract class BasePlayer(val context: Context) {
     interface SourceProvider {
         fun setAsDataSource(context: Context, mp: MediaPlayer)
     }

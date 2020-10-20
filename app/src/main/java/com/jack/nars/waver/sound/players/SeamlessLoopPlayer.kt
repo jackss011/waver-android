@@ -5,7 +5,7 @@ import android.media.MediaPlayer
 import android.util.Log
 
 
-class SeamlessLoopPlayer(context: Context) : Player(context) {
+class SeamlessLoopPlayer(context: Context) : BasePlayer(context) {
     val tag = "SeamlessLoopPlayer"
 
     private lateinit var mpA: MediaPlayer

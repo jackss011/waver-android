@@ -9,7 +9,7 @@ import android.util.Log
 import com.jack.nars.waver.old.TAG
 
 
-class CrossfadeLoopPlayer(context: Context) : Player(context) {
+class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
 
     private val blendDuration = 400
     private val blendMargin = 2000

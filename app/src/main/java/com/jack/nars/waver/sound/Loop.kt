@@ -3,7 +3,7 @@ package com.jack.nars.waver.sound
 import android.content.Context
 import android.content.res.Resources
 import android.media.MediaPlayer
-import com.jack.nars.waver.sound.players.Player
+import com.jack.nars.waver.sound.players.BasePlayer
 import java.util.*
 
 
@@ -27,7 +27,7 @@ data class Loop(
     }
 
 
-    interface Source: Player.SourceProvider {
+    interface Source: BasePlayer.SourceProvider {
         enum class Type {
             RES;
 
