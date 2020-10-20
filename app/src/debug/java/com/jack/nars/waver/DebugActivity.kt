@@ -18,11 +18,12 @@ import android.widget.SeekBar
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import com.jack.nars.waver.old.AudioLoopBlender
+import com.jack.nars.waver.AudioLoopBlender
 import timber.log.Timber
 import kotlin.math.pow
 
-class TestsActivity : AppCompatActivity() {
+
+class DebugActivity : AppCompatActivity() {
 
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -47,7 +48,7 @@ class TestsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tests)
+        setContentView(R.layout.activity_debug)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
@@ -84,7 +85,7 @@ class TestsActivity : AppCompatActivity() {
 
             // Get the token for the MediaSession
             mediaBrowser.sessionToken.also { token ->
-                mediaController = MediaController(this@TestsActivity, token)
+                mediaController = MediaController(this@DebugActivity, token)
 //                MediaController.setMediaController(this@MainActivity, mediaController)
             }
 
