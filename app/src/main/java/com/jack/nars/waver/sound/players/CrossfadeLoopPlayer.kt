@@ -6,7 +6,9 @@ import android.media.VolumeShaper
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.jack.nars.waver.TAG
+
+
+const val TAG = "CrossfadeLoopPlayer"
 
 
 class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
