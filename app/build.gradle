@@ -38,4 +38,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
