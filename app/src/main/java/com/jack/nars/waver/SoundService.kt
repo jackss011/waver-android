@@ -280,6 +280,7 @@ class SoundService : MediaBrowserService() {
             setContentTitle(description?.title) // TODO: find out what names to use
             setSubText(null) // TODO: ?
             setContentText(if (isPlaying) "Playing" else "Paused")  // TODO: use resource
+            setCategory(Notification.CATEGORY_TRANSPORT)
 
             // add notification icons
             setSmallIcon(R.drawable.ic_notification)
