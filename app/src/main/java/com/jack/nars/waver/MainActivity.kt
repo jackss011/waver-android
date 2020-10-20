@@ -74,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             Timber.i("Metadata changed")
         }
+
+        override fun onSessionEvent(event: String, extras: Bundle?) {
+            Timber.i("Session Event: $event")
+        }
     }
 
 
