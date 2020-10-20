@@ -19,6 +19,7 @@ import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import com.jack.nars.waver.old.AudioLoopBlender
+import timber.log.Timber
 import kotlin.math.pow
 
 class TestsActivity : AppCompatActivity() {
@@ -60,7 +61,7 @@ class TestsActivity : AppCompatActivity() {
                 val p = progress.toFloat() / seek.max
                 val v = if (logVolume) sliderToGain(p) else p
                 looper.setVolume(v)
-                Log.d("MY_APP", "position: %f, volume: %f".format(p, v))
+                Timber.d("position: %f, volume: %f".format(p, v))
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {}
@@ -79,7 +80,7 @@ class TestsActivity : AppCompatActivity() {
 
     private val connectionCallbacks = object : MediaBrowser.ConnectionCallback() {
         override fun onConnected() {
-            Log.d(TAG, "Media Service connected")
+            Timber.i("Media Service connected")
 
             // Get the token for the MediaSession
             mediaBrowser.sessionToken.also { token ->
@@ -103,7 +104,7 @@ class TestsActivity : AppCompatActivity() {
 
     private val controllerCallback = object: MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            Log.d(TAG, "State changed")
+            Timber.i("State changed")
         }
     }
 
@@ -130,10 +131,10 @@ class TestsActivity : AppCompatActivity() {
         val pbState = mediaController.playbackState
 
         if (pbState != null) {
-            Log.d(TAG, "Initial state: %d".format(pbState.state))
+            Timber.d("Initial state: %d".format(pbState.state))
         }
         else {
-            Log.d(TAG, "Initial state: null")
+            Timber.d("Initial state: null")
         }
 
         // Register a Callback to stay in sync

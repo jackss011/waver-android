@@ -3,7 +3,6 @@ package com.jack.nars.waver
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Bundle
-import android.util.Log
 
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
@@ -29,9 +28,8 @@ import com.jack.nars.waver.sound.LoopLoader
 import com.jack.nars.waver.sound.players.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
-
-const val TAG = "SOUND_SERVICE"
 
 const val NOTIFICATION_ID_FOREGROUND = 1001
 const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
@@ -52,7 +50,8 @@ class SoundService : MediaBrowserService() {
     override fun onCreate() {
         super.onCreate()
 
-        Log.i(TAG, "Service created")
+        Timber.i("SoundService created")
+        Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
 
         setupPlayer()
 
@@ -66,7 +65,7 @@ class SoundService : MediaBrowserService() {
             addAction(ACTION_MEDIA_DOWN)
         })
 
-        mediaSession = MediaSession(baseContext, TAG).apply {
+        mediaSession = MediaSession(baseContext, "SoundService session").apply {
             setPlaybackState(
                 PlaybackState.Builder()
                     .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
@@ -92,7 +91,7 @@ class SoundService : MediaBrowserService() {
     override fun onDestroy() {
         super.onDestroy()
 
-        Log.i(TAG, "Service destroyed")
+        Timber.i("SoundService destroyed")
 
         mediaSession?.isActive = false
         mediaSession?.release()
@@ -155,16 +154,16 @@ class SoundService : MediaBrowserService() {
 
 
         override fun onPlay() {
-            Log.i(TAG, "Session: Play")
+            Timber.i("Session: Play")
             if(playersMesh.composition == null)
-                Log.w(TAG, "Trying to play with no compostion")
+                Timber.w("Trying to play with no compostion")
 
             enterPlay(playersMesh.composition ?: return)
         }
 
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-            Log.i(TAG, "Session: Play from Id")
+            Timber.i("Session: Play from Id")
 
             val composition = Json.decodeFromString<CompositionData>(mediaId ?: return)
 
@@ -174,7 +173,7 @@ class SoundService : MediaBrowserService() {
 
 
         override fun onPause() {
-            Log.i(TAG, "Session: Pause")
+           Timber.i("Session: Pause")
 
             playersMesh.pause()
             this@SoundService.mediaSession?.setPlaybackState(pauseStateBuilder.build())
@@ -185,7 +184,7 @@ class SoundService : MediaBrowserService() {
 
 
         override fun onStop() {
-            Log.i(TAG, "Session: Stop")
+            Timber.i("Session: Stop")
 
             playersMesh.pause()
             mediaSession?.setPlaybackState(stopStateBuilder.build())
@@ -211,7 +210,7 @@ class SoundService : MediaBrowserService() {
         playersMesh = PlayersMesh(this)
 
         LoopLoader.getAllLoops(this).forEach {
-            Log.d("LoopLoader", it.id)
+            Timber.d(it.id)
             playersMesh.addLoop(it)
         }
 
@@ -228,10 +227,10 @@ class SoundService : MediaBrowserService() {
     // ===============================================
     private val mediaNotificationReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Received: " + (intent?.action ?: "null intent"))
+            with(intent?.action ?: "null intent") { Timber.d("Received: $this") }
 
             val controller = mediaSession?.controller.apply {
-                if (this == null) Log.w(TAG, "null controller on notification button press")
+                if (this == null) Timber.w("null controller on notification button press")
             }
 
             when(intent?.action) {
@@ -331,7 +330,7 @@ class SoundService : MediaBrowserService() {
                 .setMediaSession(this@SoundService.mediaSession?.sessionToken)
                 .setShowActionsInCompactView(*intArrayOf(0, 1, 2))
 
-            Log.d(TAG, "MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
+            Timber.d("MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
     }
 
@@ -364,7 +363,7 @@ class SoundService : MediaBrowserService() {
 
 
     override fun onBind(intent: Intent?): IBinder? {
-        Log.i(TAG, "Bound to ?")
+        Timber.d("Bound to ?")
 
         return super.onBind(intent)
     }

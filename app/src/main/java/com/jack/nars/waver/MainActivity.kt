@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity() {
             mediaBrowserCallbacks,
             null
         )
+
+        Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
     }
 
 
