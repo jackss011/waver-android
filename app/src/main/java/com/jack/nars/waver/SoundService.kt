@@ -258,6 +258,9 @@ class SoundService : MediaBrowserService() {
             ).apply {
                 description = "Desc"
                 enableVibration(false)
+                setSound(null, null)
+                setShowBadge(false)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
         )
     }
