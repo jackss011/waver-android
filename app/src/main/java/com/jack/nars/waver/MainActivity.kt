@@ -7,9 +7,10 @@ import android.media.session.MediaController
 import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.SeekBar
 import com.jack.nars.waver.databinding.ActivityMainBinding
+import com.jack.nars.waver.service.COMMAND_MASTER_VOLUME
+import com.jack.nars.waver.service.SoundService
 import com.jack.nars.waver.sound.CompositionData
 import com.jack.nars.waver.sound.CompositionItem
 import kotlinx.serialization.json.Json

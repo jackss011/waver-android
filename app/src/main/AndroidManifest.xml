@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".SoundService"
+        <service android:name=".service.SoundService"
                 android:enabled="true"
                 android:exported="false">
             <intent-filter>

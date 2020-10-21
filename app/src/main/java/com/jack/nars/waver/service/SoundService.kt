@@ -1,4 +1,4 @@
-package com.jack.nars.waver
+package com.jack.nars.waver.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -23,6 +23,8 @@ import android.graphics.drawable.Icon
 import android.media.MediaMetadata
 import android.os.IBinder
 import android.os.ResultReceiver
+import com.jack.nars.waver.MainActivity
+import com.jack.nars.waver.R
 import com.jack.nars.waver.sound.CompositionData
 import com.jack.nars.waver.sound.LoopLoader
 import com.jack.nars.waver.sound.players.*
@@ -34,11 +36,11 @@ import timber.log.Timber
 const val NOTIFICATION_ID_FOREGROUND = 1001
 const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
 
-const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.ACTION_MEDIA_PLAY"
-const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.ACTION_MEDIA_PAUSE"
-const val ACTION_MEDIA_STOP = "com.jack.nars.waver.ACTION_MEDIA_STOP"
-const val ACTION_MEDIA_UP = "com.jack.nars.waver.ACTION_MEDIA_UP"
-const val ACTION_MEDIA_DOWN = "com.jack.nars.waver.ACTION_MEDIA_DOWN"
+const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.service.ACTION_MEDIA_PLAY"
+const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.service.ACTION_MEDIA_PAUSE"
+const val ACTION_MEDIA_STOP = "com.jack.nars.waver.service.ACTION_MEDIA_STOP"
+const val ACTION_MEDIA_UP = "com.jack.nars.waver.service.ACTION_MEDIA_UP"
+const val ACTION_MEDIA_DOWN = "com.jack.nars.waver.service.ACTION_MEDIA_DOWN"
 
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 
@@ -252,7 +254,8 @@ class SoundService : MediaBrowserService() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID_MEDIA_CONTROLS,
+            NotificationChannel(
+                CHANNEL_ID_MEDIA_CONTROLS,
                 "Media Controls", // TODO: use resource string
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {

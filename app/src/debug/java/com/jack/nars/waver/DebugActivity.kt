@@ -11,14 +11,13 @@ import android.media.session.MediaController
 //import android.support.v4.media.session.MediaControllerCompat
 import android.media.session.PlaybackState
 //import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import com.jack.nars.waver.AudioLoopBlender
+import com.jack.nars.waver.service.SoundService
 import timber.log.Timber
 import kotlin.math.pow
 
