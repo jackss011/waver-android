@@ -5,10 +5,7 @@ import android.media.MediaPlayer
 import android.media.VolumeShaper
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-
-
-const val TAG = "CrossfadeLoopPlayer"
+import timber.log.Timber
 
 
 class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
@@ -43,11 +40,11 @@ class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
                 it.stop()
                 it.prepareAsync()
 
-                Log.d(TAG, "Reset A")
+                Timber.d("Reset A")
             }
 
             setOnPreparedListener {
-                Log.d(TAG, "Prepared A")
+                Timber.d("Prepared A")
             }
         }
 
@@ -56,11 +53,11 @@ class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
                 it.stop()
                 it.prepareAsync()
 
-                Log.d(TAG, "Reset B")
+                Timber.d("Reset B")
             }
 
             setOnPreparedListener {
-                Log.d(TAG, "Prepared B")
+                Timber.d("Prepared B")
             }
         }
     }
@@ -177,12 +174,12 @@ class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
 
 
     private fun monitorUpdate() {
-        Log.v(TAG, "Monitor Update")
+        Timber.v("Monitor Update")
 
         if (shaperStartRequired) {
             shaperStartRequired = false
 
-            Log.d(TAG, "Starting shapers...")
+            Timber.d("Starting shapers...")
 
             shaperA?.apply(VolumeShaper.Operation.PLAY)
             shaperB?.apply(VolumeShaper.Operation.PLAY)
@@ -191,7 +188,7 @@ class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
 
         if (playerA.isPlaying) {
             if (!playerB.isPlaying && playerA.currentPosition > (playerA.duration - blendMargin)) {
-                Log.d(TAG, "Fade to B")
+                Timber.d("Fade to B")
 
                 setupShapers(true)
                 playerB.start()
@@ -203,7 +200,7 @@ class CrossfadeLoopPlayer(context: Context) : BasePlayer(context) {
 
         if (playerB.isPlaying) {
             if (!playerA.isPlaying && playerB.currentPosition > playerB.duration - blendMargin) {
-                Log.d(TAG, "Fade to A")
+                Timber.d("Fade to A")
 
                 setupShapers(false)
                 playerA.start()
