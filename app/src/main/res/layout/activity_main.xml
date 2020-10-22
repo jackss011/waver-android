@@ -26,4 +26,14 @@
             app:layout_constraintBottom_toTopOf="@+id/play_pause"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+    <fragment
+            android:id="@+id/fragment"
+            android:name="com.jack.nars.waver.LoopListFragment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout="@layout/fragment_loop_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>
