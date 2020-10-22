@@ -17,18 +17,24 @@ import android.os.IBinder
 import android.os.ResultReceiver
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.LoopLoader
+import com.jack.nars.waver.data.LoopRepository
 import com.jack.nars.waver.sound.players.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import javax.inject.Inject
 
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 
 
+@AndroidEntryPoint
 class SoundService : MediaBrowserService() {
     var mediaSession: MediaSession? = null
         private set
+
+    @Inject
+    lateinit var loopsRepository: LoopRepository
 
 
     override fun onCreate() {
@@ -153,7 +159,7 @@ class SoundService : MediaBrowserService() {
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
 
-        LoopLoader.getAllLoops(this).forEach {
+        loopsRepository.staticLoops.forEach {
             Timber.d(it.id)
             playersMesh.addLoop(it)
         }
