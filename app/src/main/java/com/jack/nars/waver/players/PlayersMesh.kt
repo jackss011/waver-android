@@ -1,9 +1,9 @@
-package com.jack.nars.waver.sound.players
+package com.jack.nars.waver.players
 
 import android.content.Context
 import android.util.Log
-import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.Loop
+import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.Loop
 
 
 class PlayersMesh(val context: Context) {

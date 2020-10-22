@@ -1,9 +1,9 @@
-package com.jack.nars.waver.sound
+package com.jack.nars.waver.data
 
 import android.content.Context
 import android.content.res.Resources
 import android.media.MediaPlayer
-import com.jack.nars.waver.sound.players.BasePlayer
+import com.jack.nars.waver.players.BasePlayer
 import java.util.*
 
 

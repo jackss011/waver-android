@@ -8,17 +8,15 @@ import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
-import com.jack.nars.waver.data.LoopRepository
 import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.service.COMMAND_MASTER_VOLUME
 import com.jack.nars.waver.service.SoundService
-import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.CompositionItem
+import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.CompositionItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import timber.log.Timber
-import javax.inject.Inject
 
 
 @AndroidEntryPoint

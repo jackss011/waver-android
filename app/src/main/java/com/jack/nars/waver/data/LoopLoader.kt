@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.XmlResourceParser
 import com.jack.nars.waver.BuildConfig
 import com.jack.nars.waver.R
-import com.jack.nars.waver.sound.Loop
 import org.xmlpull.v1.XmlPullParser
 
 

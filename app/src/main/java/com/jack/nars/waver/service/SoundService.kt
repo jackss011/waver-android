@@ -16,9 +16,9 @@ import android.content.*
 import android.os.IBinder
 import android.os.ResultReceiver
 import com.jack.nars.waver.MainActivity
-import com.jack.nars.waver.sound.CompositionData
+import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.LoopRepository
-import com.jack.nars.waver.sound.players.*
+import com.jack.nars.waver.players.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json

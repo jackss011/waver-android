@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jack.nars.waver.databinding.ItemLoopBinding
-import com.jack.nars.waver.sound.Loop
+import com.jack.nars.waver.data.Loop
 
 
 class LoopAdapter(val context: Context) : RecyclerView.Adapter<LoopAdapter.Holder>() {
