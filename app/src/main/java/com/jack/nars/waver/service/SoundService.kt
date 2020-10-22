@@ -1,11 +1,7 @@
 package com.jack.nars.waver.service
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Bundle
-
-import androidx.core.content.ContextCompat
-import androidx.media.session.MediaButtonReceiver
 
 import android.service.media.MediaBrowserService
 
@@ -15,16 +11,11 @@ import android.media.browse.MediaBrowser
 import android.media.session.MediaSession
 //import android.support.v4.media.session.MediaSessionCompat
 import android.media.session.PlaybackState
-import android.support.v4.media.session.PlaybackStateCompat
-import android.app.Notification
 import android.app.PendingIntent
 import android.content.*
-import android.graphics.drawable.Icon
-import android.media.MediaMetadata
 import android.os.IBinder
 import android.os.ResultReceiver
 import com.jack.nars.waver.MainActivity
-import com.jack.nars.waver.R
 import com.jack.nars.waver.sound.CompositionData
 import com.jack.nars.waver.sound.LoopLoader
 import com.jack.nars.waver.sound.players.*
@@ -32,21 +23,12 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-
-const val NOTIFICATION_ID_FOREGROUND = 1001
-const val CHANNEL_ID_MEDIA_CONTROLS = "MEDIA_CONTROLS"
-
-const val ACTION_MEDIA_PLAY = "com.jack.nars.waver.service.ACTION_MEDIA_PLAY"
-const val ACTION_MEDIA_PAUSE = "com.jack.nars.waver.service.ACTION_MEDIA_PAUSE"
-const val ACTION_MEDIA_STOP = "com.jack.nars.waver.service.ACTION_MEDIA_STOP"
-const val ACTION_MEDIA_UP = "com.jack.nars.waver.service.ACTION_MEDIA_UP"
-const val ACTION_MEDIA_DOWN = "com.jack.nars.waver.service.ACTION_MEDIA_DOWN"
-
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 
 
 class SoundService : MediaBrowserService() {
-    private var mediaSession: MediaSession? = null
+    var mediaSession: MediaSession? = null
+        private set
 
 
     override fun onCreate() {
@@ -57,15 +39,9 @@ class SoundService : MediaBrowserService() {
 
         setupPlayer()
 
-        setupNotificationChannels()
+        setupNotificationChannels(this)
 
-        registerReceiver(mediaNotificationReceiver, IntentFilter().apply {
-            addAction(ACTION_MEDIA_PLAY)
-            addAction(ACTION_MEDIA_PAUSE)
-            addAction(ACTION_MEDIA_STOP)
-            addAction(ACTION_MEDIA_UP)
-            addAction(ACTION_MEDIA_DOWN)
-        })
+        registerReceiver(mediaNotificationReceiver, MediaAction.filter())
 
         mediaSession = MediaSession(baseContext, "SoundService session").apply {
             setPlaybackState(
@@ -105,52 +81,18 @@ class SoundService : MediaBrowserService() {
     }
 
 
-    private val playStateBuilder = PlaybackState.Builder()
-        .setActions(PlaybackState.ACTION_PAUSE
-        or PlaybackState.ACTION_STOP
-        or PlaybackState.ACTION_PLAY_PAUSE)
-        .setState(
-        PlaybackState.STATE_PLAYING,
-        PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-        1f)
-
-
-    private val pauseStateBuilder = PlaybackState.Builder()
-        .setActions(PlaybackState.ACTION_PLAY
-                or PlaybackState.ACTION_STOP
-                or PlaybackState.ACTION_PLAY_PAUSE)
-        .setState(
-            PlaybackState.STATE_PAUSED,
-            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-            0f)
-
-
-    private val stopStateBuilder = PlaybackState.Builder()
-        .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PLAY_PAUSE)
-        .setState(
-            PlaybackState.STATE_STOPPED,
-            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-            0f)
-
-
-    private fun metadataBuilder(composition: CompositionData) = MediaMetadata.Builder()
-        .putString(MediaMetadata.METADATA_KEY_TITLE, "Brown Noise")
-        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, "Brown Noise")
-        .putString(MediaMetadata.METADATA_KEY_ALBUM, getString(R.string.app_name))
-        .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, getString(R.string.app_name))
-        .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
-
-
     private val mediaSessionCallbacks = object : MediaSession.Callback() {
         fun enterPlay(composition: CompositionData) {
             startService(Intent(this@SoundService, SoundService::class.java))
 
             mediaSession?.isActive = true
             playersMesh.play()
-            mediaSession?.setPlaybackState(playStateBuilder.build())
-            mediaSession?.setMetadata(metadataBuilder(composition).build())
+            mediaSession?.setPlaybackState(Builders.playState.build())
+            mediaSession?.setMetadata(Builders.metadata(this@SoundService, composition).build())
 
-            startForeground(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
+            startForeground(ControlsNotificationBuilder.ID,
+                ControlsNotificationBuilder(this@SoundService).build()
+            )
             // TODO: consider register audio becoming noisy here
         }
 
@@ -158,7 +100,7 @@ class SoundService : MediaBrowserService() {
         override fun onPlay() {
             Timber.i("Session: Play")
             if(playersMesh.composition == null)
-                Timber.w("Trying to play with no compostion")
+                Timber.w("Trying to play with no composition")
 
             enterPlay(playersMesh.composition ?: return)
         }
@@ -178,7 +120,7 @@ class SoundService : MediaBrowserService() {
            Timber.i("Session: Pause")
 
             playersMesh.pause()
-            this@SoundService.mediaSession?.setPlaybackState(pauseStateBuilder.build())
+            this@SoundService.mediaSession?.setPlaybackState(Builders.pauseState.build())
 
             updateForegroundNotification()
             this@SoundService.stopForeground(false)
@@ -189,7 +131,7 @@ class SoundService : MediaBrowserService() {
             Timber.i("Session: Stop")
 
             playersMesh.pause()
-            mediaSession?.setPlaybackState(stopStateBuilder.build())
+            mediaSession?.setPlaybackState(Builders.stopState.build())
 
             stopSelf()
             mediaSession?.isActive = false
@@ -236,115 +178,23 @@ class SoundService : MediaBrowserService() {
             }
 
             when(intent?.action) {
-                ACTION_MEDIA_PLAY -> controller?.transportControls?.play()
-                ACTION_MEDIA_PAUSE -> controller?.transportControls?.pause()
-                ACTION_MEDIA_STOP -> controller?.transportControls?.stop()
-                ACTION_MEDIA_UP -> {
+                MediaAction.PLAY -> controller?.transportControls?.play()
+                MediaAction.PAUSE -> controller?.transportControls?.pause()
+                MediaAction.STOP -> controller?.transportControls?.stop()
+                MediaAction.UP -> {
 
                 }
-                ACTION_MEDIA_DOWN -> {
+                MediaAction.DOWN -> {
 
                 }
             }
-        }
-    }
-
-
-    private fun setupNotificationChannels() {
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        nm.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_ID_MEDIA_CONTROLS,
-                "Media Controls", // TODO: use resource string
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Desc"
-                enableVibration(false)
-                setSound(null, null)
-                setShowBadge(false)
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            }
-        )
-    }
-
-
-    private fun getForegroundNotificationBuilder(): Notification.Builder {
-        val controller = mediaSession?.controller
-        val mediaMetadata = controller?.metadata
-        val description = mediaMetadata?.description
-
-        val playbackState  = controller?.playbackState?.state
-        val isPlaying = playbackState == PlaybackState.STATE_PLAYING
-
-
-        return Notification.Builder(this, CHANNEL_ID_MEDIA_CONTROLS).apply {
-            // add playing info
-            setContentTitle(description?.title) // TODO: find out what names to use
-            setSubText(null) // TODO: ?
-            setContentText(if (isPlaying) "Playing" else "Paused")  // TODO: use resource
-            setCategory(Notification.CATEGORY_TRANSPORT)
-
-            // add notification icons
-            setSmallIcon(R.drawable.ic_notification)
-            setLargeIcon(description?.iconBitmap) //TODO: add an image representing playback
-
-            // add notification colors
-            setColorized(true)
-            setColor(ContextCompat.getColor(this@SoundService, R.color.colorAccent))
-
-            // hide time and show on lock screen
-            setShowWhen(false)
-            setVisibility(Notification.VISIBILITY_PUBLIC)
-
-            // notification click
-            setContentIntent(controller?.sessionActivity)
-
-            // notification swipe
-            setDeleteIntent(
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    this@SoundService,
-                    PlaybackStateCompat.ACTION_STOP
-                )
-            )
-
-            fun addMediaAction(title: String, icon: Int, action: String) {
-                addAction(
-                    Notification.Action.Builder(
-                        Icon.createWithResource(this@SoundService, icon),
-                        title,
-                        PendingIntent.getBroadcast(this@SoundService,
-                            0,
-                            Intent(action).setPackage(this@SoundService.packageName),
-                            0
-                        )
-                    ).build()
-                )
-            }
-
-            // notification buttons
-            addMediaAction("Volume down", R.drawable.ic_notification_down, ACTION_MEDIA_DOWN)
-            if (isPlaying)
-                addMediaAction("Pause", R.drawable.ic_notification_pause, ACTION_MEDIA_PAUSE)
-            else
-                addMediaAction("Play", R.drawable.ic_notification_play, ACTION_MEDIA_PLAY)
-            addMediaAction("Volume up", R.drawable.ic_notification_up, ACTION_MEDIA_UP)
-            addMediaAction("Close", R.drawable.ic_notification_close, ACTION_MEDIA_STOP)
-
-            // Take advantage of MediaStyle features
-            @Suppress("RemoveRedundantSpreadOperator")
-            style = Notification.MediaStyle()
-                .setMediaSession(this@SoundService.mediaSession?.sessionToken)
-                .setShowActionsInCompactView(*intArrayOf(0, 1, 2))
-
-            Timber.d("MediaSession token to notification: %s".format(this@SoundService.mediaSession?.sessionToken))
         }
     }
 
 
     private fun updateForegroundNotification() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.notify(NOTIFICATION_ID_FOREGROUND, getForegroundNotificationBuilder().build())
+        nm.notify(ControlsNotificationBuilder.ID, ControlsNotificationBuilder(this).build())
     }
 
 
