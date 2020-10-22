@@ -13,5 +13,5 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
         Timber.i("Initialized repository")
     }
 
-    val staticLoops = LoopLoader.getAllLoops(appContext)
+    val staticLoops = StaticLoopsInflater.inflate(appContext)
 }
