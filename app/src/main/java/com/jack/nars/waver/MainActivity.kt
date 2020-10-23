@@ -8,6 +8,7 @@ import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
+import androidx.databinding.DataBindingUtil
 import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.service.COMMAND_MASTER_VOLUME
 import com.jack.nars.waver.service.SoundService
@@ -29,8 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Timber.i("MainActivity created")
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         mediaBrowser = MediaBrowser(
             this,
