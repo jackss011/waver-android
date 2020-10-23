@@ -29,18 +29,28 @@ class LoopListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val context = requireContext()
-        val adapter = LoopAdapter(context)
+        val adapter =
+            LoopAdapter(LoopAdapter.Listener { id: String, enabled: Boolean, intensity: Float ->
+
+//            Timber.d("Loop update: $id, $enabled, $intensity")
+                viewModel.onLoopUpdated(id, enabled, intensity)
+            })
+
+
+
+        viewModel.displayLoops.observe(viewLifecycleOwner) {
+            Timber.i("FIRE - Display loops changed$it")
+            adapter.submitList(it)
+        }
 
         binding = FragmentLoopListBinding
             .inflate(inflater, container, false).apply {
 
-            loopList.apply {
-                this.adapter = adapter
-                layoutManager = LinearLayoutManager(context)
+                loopList.apply {
+                    this.adapter = adapter
+                    layoutManager = LinearLayoutManager(context)
+                }
             }
-        }
-
-        adapter.dataset = viewModel.staticLoops
 
         return binding.root
     }
