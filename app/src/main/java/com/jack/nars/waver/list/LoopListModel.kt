@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.CompositionItem
-import com.jack.nars.waver.data.Loop
 import com.jack.nars.waver.data.LoopRepository
 import timber.log.Timber
 import java.lang.IllegalStateException
@@ -30,14 +29,20 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     private val staticLoops = loopRepository.staticLoops.toList()
 
 
-    private val _displayedLoops: MutableLiveData<List<LoopInfo>> =
-        MutableLiveData(staticLoops.map { LoopInfo(it.id, it.title) }.toList())
+    private val _displayedLoops: MutableLiveData<List<LoopInfo>> = MutableLiveData(
+        staticLoops
+            .map { LoopInfo(it.id, it.title) }
+            .toList()
+    )
 
     val displayLoops: LiveData<List<LoopInfo>> get() = _displayedLoops
 
 
-    private val _loopControls: MutableLiveData<Map<String, LoopControls>> =
-        MutableLiveData((displayLoops.value?.map { it.id to LoopControls() })?.toMap())
+    private val _loopControls: MutableLiveData<Map<String, LoopControls>> = MutableLiveData(
+        displayLoops.value
+            ?.map { it.id to getInitialControls(it.id) }
+            ?.toMap()
+    )
 
     private val loopControls: LiveData<List<LoopControls>> get() = _loopControls.map { it.values.toList() }
 
@@ -48,6 +53,14 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
 
 
     private fun positionOf(id: String) = displayLoops.value?.indexOfFirst { id == it.id } ?: -1
+
+    private fun getInitialControls(id: String): LoopControls {
+        return loopRepository.activeCompositionData.value
+            ?.loops
+            ?.find { it.id == id }
+            ?.let { LoopControls(true, it.volume) }
+            ?: LoopControls()
+    }
 
 
     fun getControls(id: String): LoopControls? {

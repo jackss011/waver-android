@@ -89,12 +89,15 @@ class MainActivity : AppCompatActivity() {
     private fun buildTransportControls() {
         binding.playPause.apply {
             fun play() {
-                val testComposition = CompositionData(loops = listOf(
-                    CompositionItem("test:brown_noise", 0.5f),
-                    CompositionItem("test:ambient_music", volume = 0.3f)
-                ))
+                val testComposition = CompositionData(
+                    loops = listOf(
+                        CompositionItem("test:brown_noise", 0.5f),
+                        CompositionItem("test:ambient_music", volume = 0.3f)
+                    )
+                )
 
-                mediaController.transportControls.playFromMediaId(Json.encodeToString(testComposition), null)
+//                mediaController.transportControls.playFromMediaId(Json.encodeToString(testComposition), null)
+                mediaController.transportControls.play()
             }
 
             setOnClickListener {

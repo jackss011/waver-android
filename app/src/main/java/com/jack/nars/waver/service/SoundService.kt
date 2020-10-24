@@ -15,6 +15,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.os.IBinder
 import android.os.ResultReceiver
+import androidx.lifecycle.Observer
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.LoopRepository
@@ -23,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
@@ -46,9 +48,29 @@ class SoundService : MediaBrowserService() {
         setupPlayer()
 
         setupNotificationChannels(this)
-
         registerReceiver(mediaNotificationReceiver, MediaAction.filter())
 
+        createMediaSession()
+        sessionToken = mediaSession?.sessionToken
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Timber.i("SoundService destroyed")
+
+        mediaSession?.isActive = false
+        mediaSession?.release()
+
+        playersMesh.release()
+        loopsRepository.activeCompositionData.removeObserver(compositionObserver)
+
+        unregisterReceiver(mediaNotificationReceiver)
+    }
+
+
+    private fun createMediaSession() {
         mediaSession = MediaSession(baseContext, "SoundService session").apply {
             setPlaybackState(
                 PlaybackState.Builder()
@@ -67,23 +89,6 @@ class SoundService : MediaBrowserService() {
                 )
             )
         }
-
-        sessionToken = mediaSession?.sessionToken
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Timber.i("SoundService destroyed")
-
-        mediaSession?.isActive = false
-        mediaSession?.release()
-
-        // TODO: release the player
-        playersMesh.release()
-
-        unregisterReceiver(mediaNotificationReceiver)
     }
 
 
@@ -146,7 +151,7 @@ class SoundService : MediaBrowserService() {
 
 
         override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
-            when(command) {
+            when (command) {
                 COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { playersMesh.masterVolume = it }
             }
         }
@@ -155,6 +160,9 @@ class SoundService : MediaBrowserService() {
 
     private lateinit var playersMesh: PlayersMesh
 
+    // TODO: add lifecycle to service
+    private val compositionObserver =
+        Observer<CompositionData?> { c -> playersMesh.updateComposition(c) }
 
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
@@ -163,6 +171,8 @@ class SoundService : MediaBrowserService() {
             Timber.d(it.id)
             playersMesh.addLoop(it)
         }
+
+        loopsRepository.activeCompositionData.observeForever(compositionObserver)
 
 //        val testComposition = CompositionData(loops = listOf(
 //            CompositionItem("test:brown_noise", 0.5f),
