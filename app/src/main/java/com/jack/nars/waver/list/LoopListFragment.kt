@@ -33,6 +33,7 @@ class LoopListFragment : Fragment() {
         val context = requireContext()
         val adapter =
             LoopAdapter(
+                this,
                 viewModel,
                 LoopAdapter.Listener { id: String, enabled: Boolean, intensity: Float ->
 
@@ -41,6 +42,7 @@ class LoopListFragment : Fragment() {
                 })
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_loop_list, container, false)
+        binding.lifecycleOwner = this
 
         binding.loopList.apply {
             this.adapter = adapter

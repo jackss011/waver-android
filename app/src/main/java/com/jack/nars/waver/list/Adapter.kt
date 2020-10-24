@@ -1,39 +1,71 @@
 package com.jack.nars.waver.list
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.TextView
+import androidx.databinding.BaseObservable
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.InverseBindingAdapter
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.ItemLoopBinding
 import timber.log.Timber
-import java.lang.StrictMath.round
 
 
-class LoopAdapter(private val viewModel: LoopListModel, private val listener: Listener? = null) :
+class LoopAdapter(
+    private val lifecycleOwner: LifecycleOwner,
+    private val viewModel: LoopListModel,
+    private val listener: Listener? = null
+) :
     ListAdapter<DisplayLoop, LoopAdapter.Holder>(Diff()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         Timber.i("FIRE - view created")
         val inflater = LayoutInflater.from(parent.context)
-        return Holder(DataBindingUtil.inflate(inflater, R.layout.item_loop, parent, false))
+        val binding: ItemLoopBinding =
+            DataBindingUtil.inflate(inflater, R.layout.item_loop, parent, false)
+        binding.lifecycleOwner = lifecycleOwner
+        return Holder(binding)
     }
 
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bindTo(getItem(position) ?: return, listener)
+        holder.bindTo(viewModel, position)
     }
 
+    class ItemDataWrapper(val data: LiveData<ItemData>?)
+    data class ItemData(val viewModel: LoopListModel, val position: Int)
 
     class Holder(private val binding: ItemLoopBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindTo(loop: DisplayLoop, listener: Listener?) {
-            Timber.i("FIRE - bindTo ${loop.id}")
-            binding.executePendingBindings()
+        fun bindTo(viewModel: LoopListModel, position: Int) {
 
+            val ld = Transformations.map(viewModel.displayLoops) {
+                Timber.w("GUCK")
+                ItemData(viewModel, position)
+            }
+
+            val w = ItemDataWrapper(ld)
+            binding.watch = w
+            binding.executePendingBindings()
+//            binding.invalidateAll()
+
+
+//            ld.observe(binding.lifecycleOwner)
+
+            Timber.w("bind to: ${ld} -> ${ld.value}")
+        }
+
+//        fun bindTo(loop: DisplayLoop, listener: Listener?) {
+//            Timber.i("FIRE - bindTo ${loop.id}")
+//            binding.executePendingBindings()
+//
 //            if (listener == null) return
 //
 //            binding.itemSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -59,7 +91,7 @@ class LoopAdapter(private val viewModel: LoopListModel, private val listener: Li
 //                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 //                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 //            })
-        }
+//        }
     }
 
 
@@ -81,3 +113,24 @@ class LoopAdapter(private val viewModel: LoopListModel, private val listener: Li
             listener(id, enabled, intensity)
     }
 }
+
+
+@BindingAdapter("title")
+fun title(tw: TextView, data: LoopAdapter.ItemData?) {
+    if (data != null) {
+        tw.text = data.viewModel.displayLoops.value?.get(data.position)?.title ?: return
+    }
+}
+
+
+@BindingAdapter("prg")
+fun setPrg(view: SeekBar, data: LoopAdapter.ItemData?) {
+    if (data != null) {
+
+    }
+}
+//
+//@InverseBindingAdapter(attribute = "prg")
+//fun getPrg(view: SeekBar): LoopAdapter.ItemData? {
+////    return view.getTime()
+//}
