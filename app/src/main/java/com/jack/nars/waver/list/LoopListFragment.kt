@@ -19,34 +19,26 @@ class LoopListFragment : Fragment() {
     private lateinit var binding: FragmentLoopListBinding
     private val viewModel: LoopListModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        Timber.i("Created")
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val context = requireContext()
-        val adapter =
-            LoopAdapter(
-                this,
-                viewModel,
-                LoopAdapter.Listener { id: String, enabled: Boolean, intensity: Float ->
+        val adapter = LoopAdapter(this, viewModel)
 
-//            Timber.d("Loop update: $id, $enabled, $intensity")
-//                viewModel.onLoopUpdated(id, enabled, intensity)
-                })
+        binding = DataBindingUtil.inflate<FragmentLoopListBinding>(
+            inflater,
+            R.layout.fragment_loop_list,
+            container,
+            false
+        ).apply {
+            lifecycleOwner = this@LoopListFragment
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_loop_list, container, false)
-        binding.lifecycleOwner = this
-
-        binding.loopList.apply {
-            this.adapter = adapter
-            layoutManager = LinearLayoutManager(context)
+            loopList.apply {
+                this.adapter = adapter
+                layoutManager = LinearLayoutManager(context)
+            }
         }
 
         viewModel.displayLoops.observe(viewLifecycleOwner) {

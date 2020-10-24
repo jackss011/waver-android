@@ -15,52 +15,131 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jack.nars.waver.R
+import com.jack.nars.waver.data.Loop
 import com.jack.nars.waver.databinding.ItemLoopBinding
+import kotlinx.android.synthetic.main.item_loop.view.*
 import timber.log.Timber
+import kotlin.math.round
 
 
 class LoopAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val viewModel: LoopListModel,
-    private val listener: Listener? = null
-) :
-    ListAdapter<DisplayLoop, LoopAdapter.Holder>(Diff()) {
+) : ListAdapter<LoopInfo, LoopAdapter.Holder>(Diff()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         Timber.i("FIRE - view created")
+
         val inflater = LayoutInflater.from(parent.context)
+
         val binding: ItemLoopBinding =
             DataBindingUtil.inflate(inflater, R.layout.item_loop, parent, false)
         binding.lifecycleOwner = lifecycleOwner
+
         return Holder(binding)
     }
 
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bindTo(viewModel, position)
+        holder.bindTo(getItem(position), viewModel.getControls(position), viewModel)
     }
 
-    class ItemDataWrapper(val data: LiveData<ItemData>?)
-    data class ItemData(val viewModel: LoopListModel, val position: Int)
+
 
     class Holder(private val binding: ItemLoopBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindTo(viewModel: LoopListModel, position: Int) {
 
-            val ld = Transformations.map(viewModel.displayLoops) {
-                Timber.w("GUCK")
-                ItemData(viewModel, position)
+        fun bindTo(info: LoopInfo, controls: LoopControls?, viewModel: LoopListModel) {
+            binding.apply {
+                this.info = info
+                executePendingBindings()
             }
 
-            val w = ItemDataWrapper(ld)
-            binding.watch = w
-            binding.executePendingBindings()
-//            binding.invalidateAll()
+            if (controls == null) throw IllegalStateException("Missing LoopControls")
 
+            binding.apply {
+                itemSwitch.apply {
+                    isChecked = controls.enabled
 
-//            ld.observe(binding.lifecycleOwner)
+                    setOnCheckedChangeListener { _, isChecked ->
+                        viewModel.onLoopEnabled(info.id, isChecked)
+                    }
+                }
 
-            Timber.w("bind to: ${ld} -> ${ld.value}")
+                itemSeek.apply {
+                    progress = round(controls.intensity * itemSeek.max).toInt()
+
+                    setUpdateListener {
+                        viewModel.onLoopIntensity(info.id, it)
+                    }
+                }
+            }
         }
+    }
+
+
+    class Diff : DiffUtil.ItemCallback<LoopInfo>() {
+        override fun areItemsTheSame(oldItem: LoopInfo, newItem: LoopInfo): Boolean {
+            Timber.i("Asking for same ITEM: $oldItem -> $newItem\n return ${oldItem.id == newItem.id}")
+            return newItem.id == oldItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: LoopInfo, newItem: LoopInfo): Boolean {
+            Timber.i("Asking for same CONTENT: $oldItem -> $newItem\n return ${oldItem == newItem}")
+            return newItem == oldItem
+        }
+    }
+}
+
+
+fun SeekBar.setUpdateListener(callback: (intensity: Float) -> Unit) {
+    setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            callback(progress.toFloat() / max)
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+}
+
+
+//@BindingAdapter("title")
+//fun title(tw: TextView, data: LoopAdapter.ItemData?) {
+//    if (data != null) {
+//        tw.text = data.viewModel.displayLoops.value?.get(data.position)?.title ?: return
+//    }
+//}
+//
+//
+//@BindingAdapter("prg")
+//fun setPrg(view: SeekBar, data: LoopAdapter.ItemData?) {
+//    if (data != null) {
+//
+//    }
+//}
+//
+//@InverseBindingAdapter(attribute = "prg")
+//fun getPrg(view: SeekBar): LoopAdapter.ItemData? {
+////    return view.getTime()
+//}
+
+//        fun bindTo(viewModel: LoopListModel, position: Int) {
+//
+//            val ld = Transformations.map(viewModel.displayLoops) {
+//                Timber.w("GUCK")
+//                ItemData(viewModel, position)
+//            }
+//
+//            val w = ItemDataWrapper(ld)
+//            binding.watch = w
+//            binding.executePendingBindings()
+////            binding.invalidateAll()
+//
+//
+////            ld.observe(binding.lifecycleOwner)
+//
+//            Timber.w("bind to: ${ld} -> ${ld.value}")
+//        }
 
 //        fun bindTo(loop: DisplayLoop, listener: Listener?) {
 //            Timber.i("FIRE - bindTo ${loop.id}")
@@ -92,45 +171,9 @@ class LoopAdapter(
 //                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 //            })
 //        }
-    }
-
-
-    class Diff : DiffUtil.ItemCallback<DisplayLoop>() {
-        override fun areItemsTheSame(oldItem: DisplayLoop, newItem: DisplayLoop): Boolean {
-            Timber.i("Asking for same ITEM: $oldItem -> $newItem\n return ${oldItem.id == newItem.id}")
-            return newItem.id == oldItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: DisplayLoop, newItem: DisplayLoop): Boolean {
-            Timber.i("Asking for same CONTENT: $oldItem -> $newItem\n return ${oldItem == newItem}")
-            return newItem == oldItem
-        }
-    }
-
-
-    class Listener(val listener: (id: String, enabled: Boolean, intensity: Float) -> Unit) {
-        fun onLoopUpdated(id: String, enabled: Boolean, intensity: Float) =
-            listener(id, enabled, intensity)
-    }
-}
-
-
-@BindingAdapter("title")
-fun title(tw: TextView, data: LoopAdapter.ItemData?) {
-    if (data != null) {
-        tw.text = data.viewModel.displayLoops.value?.get(data.position)?.title ?: return
-    }
-}
-
-
-@BindingAdapter("prg")
-fun setPrg(view: SeekBar, data: LoopAdapter.ItemData?) {
-    if (data != null) {
-
-    }
-}
 //
-//@InverseBindingAdapter(attribute = "prg")
-//fun getPrg(view: SeekBar): LoopAdapter.ItemData? {
-////    return view.getTime()
+//
+//class Listener(val listener: (id: String, enabled: Boolean, intensity: Float) -> Unit) {
+//    fun onLoopUpdated(id: String, enabled: Boolean, intensity: Float) =
+//        listener(id, enabled, intensity)
 //}

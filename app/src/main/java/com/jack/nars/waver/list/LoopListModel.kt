@@ -4,15 +4,20 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import com.jack.nars.waver.data.Loop
 import com.jack.nars.waver.data.LoopRepository
 import timber.log.Timber
 
 
-data class DisplayLoop(
+data class LoopInfo(
     val id: String,
     val title: String,
-    val enabled: Boolean,
-    val intensity: Float
+)
+
+data class LoopControls(
+    val enabled: Boolean = false,
+    val intensity: Float = .5f,
 )
 
 
@@ -21,38 +26,51 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
 
     private val staticLoops = loopRepository.staticLoops.toList()
 
-    private val _displayedLoops: MutableLiveData<List<DisplayLoop>> =
-        MutableLiveData(staticLoops.map {
-            DisplayLoop(it.id, it.title, false, 1f)
-        }.toList())
-    val displayLoops: LiveData<List<DisplayLoop>> get() = _displayedLoops
+
+    private val _displayedLoops: MutableLiveData<List<LoopInfo>> =
+        MutableLiveData(staticLoops.map { LoopInfo(it.id, it.title) }.toList())
+
+    val displayLoops: LiveData<List<LoopInfo>> get() = _displayedLoops
 
 
-    private fun setLoopEnabled(id: String, newEnabled: Boolean) {
-        val new = _displayedLoops.value?.map {
-            if (id == it.id)
-                it.copy(enabled = newEnabled)
-            else
-                it.copy()
-        }
+    private val _loopControls: MutableLiveData<List<LoopControls>> =
+        MutableLiveData(displayLoops.value?.map { LoopControls() }?.toList())
 
-        _displayedLoops.value = new
+    private val loopControls: LiveData<List<LoopControls>> get() = _loopControls
 
-        Timber.i("FIRE - Loop enabled $newEnabled")
+
+    init {
+        Timber.i("${loopControls.value}")
     }
 
 
-    private fun changeLoopIntensity(id: String, newIntensity: Float) {
-        val new = _displayedLoops.value?.map {
-            if (id == it.id)
-                it.copy(intensity = newIntensity)
-            else
-                it.copy()
-        }
+    private fun positionOf(id: String) = displayLoops.value?.indexOfFirst { id == it.id } ?: -1
 
-        _displayedLoops.value = new
+
+    fun getControls(position: Int): LoopControls? {
+        return loopControls.value?.get(position)
     }
 
 
-    private fun getCompositionData() {}
+    fun getControls(id: String): LoopControls? {
+        return getControls(positionOf(id))
+    }
+
+
+    fun onLoopIntensity(id: String, intensity: Float) {
+        updateControl(id) { it.copy(intensity = intensity) }
+    }
+
+
+    fun onLoopEnabled(id: String, enabled: Boolean) {
+        updateControl(id) { it.copy(enabled = enabled) }
+    }
+
+
+    private fun updateControl(id: String, updater: (LoopControls) -> LoopControls) {
+        val pos = positionOf(id)
+        _loopControls.value = loopControls.value?.mapIndexed { index, it ->
+            if (index == pos) updater(it) else it.copy()
+        }
+    }
 }

@@ -6,8 +6,8 @@
     <data>
 
         <variable
-                name="watch"
-                type="com.jack.nars.waver.list.LoopAdapter.ItemDataWrapper" />
+                name="info"
+                type="com.jack.nars.waver.list.LoopInfo" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                title="@{watch.data}"
+                android:text="@{info.title}"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/item_switch"
                 app:layout_constraintStart_toEndOf="@+id/item_switch"
