@@ -5,9 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.CompositionItem
 import com.jack.nars.waver.data.Loop
 import com.jack.nars.waver.data.LoopRepository
 import timber.log.Timber
+import java.lang.IllegalStateException
 
 
 data class LoopInfo(
@@ -33,10 +36,10 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     val displayLoops: LiveData<List<LoopInfo>> get() = _displayedLoops
 
 
-    private val _loopControls: MutableLiveData<List<LoopControls>> =
-        MutableLiveData(displayLoops.value?.map { LoopControls() }?.toList())
+    private val _loopControls: MutableLiveData<Map<String, LoopControls>> =
+        MutableLiveData((displayLoops.value?.map { it.id to LoopControls() })?.toMap())
 
-    private val loopControls: LiveData<List<LoopControls>> get() = _loopControls
+    private val loopControls: LiveData<List<LoopControls>> get() = _loopControls.map { it.values.toList() }
 
 
     init {
@@ -47,13 +50,8 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     private fun positionOf(id: String) = displayLoops.value?.indexOfFirst { id == it.id } ?: -1
 
 
-    fun getControls(position: Int): LoopControls? {
-        return loopControls.value?.get(position)
-    }
-
-
     fun getControls(id: String): LoopControls? {
-        return getControls(positionOf(id))
+        return _loopControls.value?.get(id)
     }
 
 
@@ -68,9 +66,26 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
 
 
     private fun updateControl(id: String, updater: (LoopControls) -> LoopControls) {
-        val pos = positionOf(id)
-        _loopControls.value = loopControls.value?.mapIndexed { index, it ->
-            if (index == pos) updater(it) else it.copy()
+        _loopControls.value = _loopControls.value?.mapValues { (key, value) ->
+            if (key == id) updater(value) else value.copy()
         }
+
+        updateComposition()
+    }
+
+
+    private fun calculateComposition(): CompositionData {
+        val loops = (_loopControls.value ?: throw IllegalStateException())
+            .filter { (_, c) -> c.enabled }
+            .map { (id, c) -> CompositionItem(id, c.intensity) }
+
+        return CompositionData(loops)
+    }
+
+
+    private fun updateComposition() {
+        val c = calculateComposition()
+
+        loopRepository.updateActiveComposition(c)
     }
 }

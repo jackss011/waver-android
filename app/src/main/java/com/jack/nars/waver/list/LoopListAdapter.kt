@@ -41,7 +41,8 @@ class LoopAdapter(
 
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bindTo(getItem(position), viewModel.getControls(position), viewModel)
+        val item = getItem(position)
+        holder.bindTo(item, viewModel.getControls(item.id), viewModel)
     }
 
 
