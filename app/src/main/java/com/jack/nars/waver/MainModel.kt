@@ -16,6 +16,9 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     }
 
     var mediaController: MediaController? = null
+        set(value) {
+            field = value?.also { onPlaybackUpdate(it.playbackState) }
+        }
 
     private val _isPlaying = MutableLiveData(false)
     val isPlaying: LiveData<Boolean> = _isPlaying

@@ -65,6 +65,7 @@ class SoundService : MediaBrowserService() {
 
         playersMesh.release()
         loopsRepository.activeCompositionData.removeObserver(compositionObserver)
+        loopsRepository.masterVolume.removeObserver(masterVolumeObserver)
 
         unregisterReceiver(mediaNotificationReceiver)
     }
@@ -94,6 +95,11 @@ class SoundService : MediaBrowserService() {
 
     private val mediaSessionCallbacks = object : MediaSession.Callback() {
         fun enterPlay(composition: CompositionData) {
+            if (!composition.isPlayable) {
+                Timber.w("Trying to EnterPlay with not playable composition")
+                return
+            }
+
             startService(Intent(this@SoundService, SoundService::class.java))
 
             mediaSession?.isActive = true
@@ -101,7 +107,8 @@ class SoundService : MediaBrowserService() {
             mediaSession?.setPlaybackState(Builders.playState.build())
             mediaSession?.setMetadata(Builders.metadata(this@SoundService, composition).build())
 
-            startForeground(ControlsNotificationBuilder.ID,
+            startForeground(
+                ControlsNotificationBuilder.ID,
                 ControlsNotificationBuilder(this@SoundService).build()
             )
             // TODO: consider register audio becoming noisy here
@@ -124,8 +131,7 @@ class SoundService : MediaBrowserService() {
 
             updateCurrentComposition(composition)
 
-            if (composition.isPlayable)
-                enterPlay(composition)
+            enterPlay(composition)
         }
 
 
@@ -154,24 +160,11 @@ class SoundService : MediaBrowserService() {
 
         override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
             when (command) {
-                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { playersMesh.masterVolume = it }
+                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { }
             }
         }
     }
 
-
-    private lateinit var playersMesh: PlayersMesh
-
-
-    private fun updateCurrentComposition(c: CompositionData?) {
-        playersMesh.updateComposition(c)
-
-        if (c == null || !c.isPlayable)
-            mediaSession!!.controller.transportControls.pause()
-    }
-
-    // TODO: add lifecycle to service
-    private val compositionObserver = Observer<CompositionData?> { updateCurrentComposition(it) }
 
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
@@ -182,13 +175,36 @@ class SoundService : MediaBrowserService() {
         }
 
         loopsRepository.activeCompositionData.observeForever(compositionObserver)
+        loopsRepository.masterVolume.observeForever(masterVolumeObserver)
     }
 
+
+    private lateinit var playersMesh: PlayersMesh
+
+    private val compositionObserver = Observer<CompositionData?> { updateCurrentComposition(it) }
+    private val masterVolumeObserver = Observer<Float> { updateMasterVolume(it) }
+
+
+    private fun updateCurrentComposition(c: CompositionData?) {
+        playersMesh.updateComposition(c)
+
+        if (c == null || !c.isPlayable)
+            mediaSession!!.controller.transportControls.pause()
+    }
+
+
+    private fun updateMasterVolume(it: Float) {
+        Timber.v("Updated master volume: $it")
+        playersMesh.masterVolume = it
+    }
+
+
+    // TODO: add lifecycle to service
 
     // ===============================================
     // ================= NOTIFICATIONS ===============
     // ===============================================
-    private val mediaNotificationReceiver = object: BroadcastReceiver() {
+    private val mediaNotificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             with(intent?.action ?: "null intent") { Timber.d("Received: $this") }
 
@@ -213,7 +229,14 @@ class SoundService : MediaBrowserService() {
 
     private fun updateForegroundNotification() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.notify(ControlsNotificationBuilder.ID, ControlsNotificationBuilder(this).build())
+
+        if (nm.activeNotifications.any { it.id == ControlsNotificationBuilder.ID })
+            nm.notify(
+                ControlsNotificationBuilder.ID,
+                ControlsNotificationBuilder(this).build()
+            )
+        else
+            Timber.w("Trying to update non existing foreground notification")
     }
 
 
