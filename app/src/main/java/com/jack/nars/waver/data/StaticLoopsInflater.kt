@@ -2,9 +2,11 @@ package com.jack.nars.waver.data
 
 import android.content.Context
 import android.content.res.XmlResourceParser
+import android.util.TimingLogger
 import com.jack.nars.waver.BuildConfig
 import com.jack.nars.waver.R
 import org.xmlpull.v1.XmlPullParser
+import timber.log.Timber
 
 
 object StaticLoopsInflater {
@@ -63,5 +65,16 @@ object StaticLoopsInflater {
     }
 
 
-    fun inflate(context: Context): Iterable<Loop> = parseLoops(context.resources.getXml(R.xml.loops))
+    fun inflate(context: Context): Iterable<Loop> {
+//        val timer = TimingLogger("StaticLoopInflation", "inflate")
+//        val res =  parseLoops(context.resources.getXml(R.xml.loops))
+//        timer.addSplit("end")
+//        timer.dumpToLog()
+
+//        val s = System.currentTimeMillis()
+//        val res =  parseLoops(context.resources.getXml(R.xml.loops))
+//        Timber.d("inflation time: ${System.currentTimeMillis() - s}ms")
+
+        return parseLoops(context.resources.getXml(R.xml.loops))
+    }
 }

@@ -15,5 +15,5 @@ class WaverApplication : Application() {
         Timber.plant(Timber.DebugTree())
     }
 
-    fun delayedCreate() {}
+    private fun delayedCreate() {}
 }

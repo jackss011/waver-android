@@ -1,6 +1,7 @@
 package com.jack.nars.waver.data
 
 import android.content.Context
+import android.os.storage.StorageVolume
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,5 +27,21 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
 
     fun resetActiveComposition() {
         _activeComposition.value = null
+    }
+
+
+//    private val _isPlaying = MutableLiveData(false)
+//    val isPlaying: LiveData<Boolean> = _isPlaying
+//
+//
+//    fun notifyPlaying(isPlaying: Boolean) {
+//        _isPlaying.value = isPlaying
+//    }
+
+    private val _masterVolume = MutableLiveData(1f)
+    val masterVolume: MutableLiveData<Float> = _masterVolume
+
+    fun updateMasterVolume(volume: Float) {
+        _masterVolume.value = volume
     }
 }

@@ -6,4 +6,6 @@ import kotlinx.serialization.Serializable
 data class CompositionItem(val id: String, val volume: Float)
 
 @Serializable
-data class CompositionData(val loops: List<CompositionItem>)
+data class CompositionData(val loops: List<CompositionItem>) {
+    val isPlayable get() = loops.isNotEmpty()
+}

@@ -45,13 +45,13 @@ class SoundService : MediaBrowserService() {
         Timber.i("SoundService created")
         Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
 
-        setupPlayer()
-
         setupNotificationChannels(this)
         registerReceiver(mediaNotificationReceiver, MediaAction.filter())
 
         createMediaSession()
         sessionToken = mediaSession?.sessionToken
+
+        setupPlayer()
     }
 
 
@@ -122,8 +122,10 @@ class SoundService : MediaBrowserService() {
 
             val composition = Json.decodeFromString<CompositionData>(mediaId ?: return)
 
-            playersMesh.updateComposition(composition)
-            enterPlay(composition)
+            updateCurrentComposition(composition)
+
+            if (composition.isPlayable)
+                enterPlay(composition)
         }
 
 
@@ -160,9 +162,16 @@ class SoundService : MediaBrowserService() {
 
     private lateinit var playersMesh: PlayersMesh
 
+
+    private fun updateCurrentComposition(c: CompositionData?) {
+        playersMesh.updateComposition(c)
+
+        if (c == null || !c.isPlayable)
+            mediaSession!!.controller.transportControls.pause()
+    }
+
     // TODO: add lifecycle to service
-    private val compositionObserver =
-        Observer<CompositionData?> { c -> playersMesh.updateComposition(c) }
+    private val compositionObserver = Observer<CompositionData?> { updateCurrentComposition(it) }
 
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
@@ -173,12 +182,6 @@ class SoundService : MediaBrowserService() {
         }
 
         loopsRepository.activeCompositionData.observeForever(compositionObserver)
-
-//        val testComposition = CompositionData(loops = listOf(
-//            CompositionItem("test:brown_noise", 0.5f),
-//            CompositionItem("test:ambient_music", volume = 0.3f)
-//        ))
-//        playersMesh.updateComposition(testComposition)
     }
 
 
