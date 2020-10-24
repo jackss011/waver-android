@@ -28,7 +28,7 @@ class LoopAdapter(
 ) : ListAdapter<LoopInfo, LoopAdapter.Holder>(Diff()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        Timber.i("FIRE - view created")
+        Timber.i("LIST - view created")
 
         val inflater = LayoutInflater.from(parent.context)
 
@@ -77,14 +77,15 @@ class LoopAdapter(
     }
 
 
+
     class Diff : DiffUtil.ItemCallback<LoopInfo>() {
         override fun areItemsTheSame(oldItem: LoopInfo, newItem: LoopInfo): Boolean {
-            Timber.i("Asking for same ITEM: $oldItem -> $newItem\n return ${oldItem.id == newItem.id}")
+//            Timber.i("Asking for same ITEM: $oldItem -> $newItem\n return ${oldItem.id == newItem.id}")
             return newItem.id == oldItem.id
         }
 
         override fun areContentsTheSame(oldItem: LoopInfo, newItem: LoopInfo): Boolean {
-            Timber.i("Asking for same CONTENT: $oldItem -> $newItem\n return ${oldItem == newItem}")
+//            Timber.i("Asking for same CONTENT: $oldItem -> $newItem\n return ${oldItem == newItem}")
             return newItem == oldItem
         }
     }

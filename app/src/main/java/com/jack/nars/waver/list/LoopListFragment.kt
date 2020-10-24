@@ -42,7 +42,7 @@ class LoopListFragment : Fragment() {
         }
 
         viewModel.displayLoops.observe(viewLifecycleOwner) {
-            Timber.i("FIRE - Display loops changed$it")
+            Timber.i("LIST - Display loops changed$it")
             adapter.submitList(it)
         }
 

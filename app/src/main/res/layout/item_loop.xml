@@ -4,7 +4,6 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
                 name="info"
                 type="com.jack.nars.waver.list.LoopInfo" />
@@ -32,10 +31,10 @@
 
         <SeekBar
                 android:id="@+id/item_seek"
+                android:progress="50"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:progress="50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/item_title" />
