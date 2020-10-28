@@ -15,6 +15,8 @@ import android.app.PendingIntent
 import android.content.*
 import android.os.IBinder
 import android.os.ResultReceiver
+import android.view.Display
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.data.CompositionData
@@ -31,7 +33,7 @@ const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 
 
 @AndroidEntryPoint
-class SoundService : MediaBrowserService() {
+class SoundService : MediaBrowserService(), LifecycleOwner {
     var mediaSession: MediaSession? = null
         private set
 
@@ -40,6 +42,7 @@ class SoundService : MediaBrowserService() {
 
 
     override fun onCreate() {
+        dispatcher.onServicePreSuperOnCreate()
         super.onCreate()
 
         Timber.i("SoundService created")
@@ -56,6 +59,7 @@ class SoundService : MediaBrowserService() {
 
 
     override fun onDestroy() {
+        dispatcher.onServicePreSuperOnDestroy()
         super.onDestroy()
 
         Timber.i("SoundService destroyed")
@@ -263,7 +267,18 @@ class SoundService : MediaBrowserService() {
 
     override fun onBind(intent: Intent?): IBinder? {
         Timber.d("Bound to ?")
-
+        dispatcher.onServicePreSuperOnBind()
         return super.onBind(intent)
     }
+
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        dispatcher.onServicePreSuperOnStart()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+
+    private val dispatcher = ServiceLifecycleDispatcher(this)
+
+    override fun getLifecycle() = dispatcher.lifecycle
 }
