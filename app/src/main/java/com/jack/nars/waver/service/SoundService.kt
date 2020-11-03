@@ -30,8 +30,6 @@ import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
-
 
 @AndroidEntryPoint
 class SoundService : MediaBrowserService(), LifecycleOwner {
@@ -161,13 +159,6 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
             stopSelf()
             mediaSession?.isActive = false
             stopForeground(true)
-        }
-
-
-        override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
-            when (command) {
-                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { }
-            }
         }
     }
 
