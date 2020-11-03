@@ -12,9 +12,6 @@ import javax.inject.Singleton
 
 @Singleton
 class LoopRepository @Inject constructor(@ApplicationContext appContext: Context) {
-    init {
-        Timber.i("Initialized repository")
-    }
 
     val staticLoops = StaticLoopsInflater.inflate(appContext)
 
@@ -37,11 +34,4 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
 //    fun notifyPlaying(isPlaying: Boolean) {
 //        _isPlaying.value = isPlaying
 //    }
-
-    private val _masterVolume = MutableLiveData(1f)
-    val masterVolume: MutableLiveData<Float> = _masterVolume
-
-    fun updateMasterVolume(volume: Float) {
-        _masterVolume.value = volume
-    }
 }

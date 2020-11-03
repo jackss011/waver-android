@@ -20,6 +20,7 @@ import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.ControlsRepository
 import com.jack.nars.waver.data.LoopRepository
 import com.jack.nars.waver.players.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +40,9 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
 
     @Inject
     lateinit var loopsRepository: LoopRepository
+
+    @Inject
+    lateinit var controlsRepository: ControlsRepository
 
 
     override fun onCreate() {
@@ -69,7 +73,7 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
 
         playersMesh.release()
         loopsRepository.activeCompositionData.removeObserver(compositionObserver)
-        loopsRepository.masterVolume.removeObserver(masterVolumeObserver)
+        controlsRepository.masterVolume.removeObserver(masterVolumeObserver)
 
         unregisterReceiver(mediaNotificationReceiver)
     }
@@ -179,7 +183,7 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
         }
 
         loopsRepository.activeCompositionData.observeForever(compositionObserver)
-        loopsRepository.masterVolume.observeForever(masterVolumeObserver)
+        controlsRepository.masterVolume.observeForever(masterVolumeObserver)
     }
 
 
