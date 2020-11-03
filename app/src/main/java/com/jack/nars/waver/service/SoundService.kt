@@ -33,6 +33,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SoundService : MediaBrowserService(), LifecycleOwner {
+    var showVolumeAction = false
+        private set
+
     var mediaSession: MediaSession? = null
         private set
 
