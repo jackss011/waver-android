@@ -7,17 +7,12 @@ import android.media.session.MediaController
 import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.jack.nars.waver.databinding.ActivityMainBinding
-import com.jack.nars.waver.service.COMMAND_MASTER_VOLUME
 import com.jack.nars.waver.service.SoundService
-import com.jack.nars.waver.data.CompositionData
-import com.jack.nars.waver.data.CompositionItem
+import com.jack.nars.waver.data.PlaybackRequest
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 import timber.log.Timber
 
 
@@ -42,6 +37,10 @@ class MainActivity : AppCompatActivity() {
             null
         )
 
+        viewModel.playbackRequest.observe(this) {
+            onPlaybackRequest(it)
+        }
+
         Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
     }
 
@@ -57,8 +56,25 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
 
         mediaController.unregisterCallback(controllerCallback)
-        viewModel.mediaController = null
         mediaBrowser.disconnect()
+    }
+
+
+    private fun onPlaybackRequest(r: PlaybackRequest?) {
+        if (r != null) {
+            val tc = mediaController.transportControls
+            val state = mediaController.playbackState?.state
+
+            when (r) {
+                PlaybackRequest.PLAY -> tc.play()
+                PlaybackRequest.PAUSE -> tc.pause()
+                PlaybackRequest.PLAY_PAUSE -> {
+                    if (state == PlaybackState.STATE_PLAYING) tc.pause() else tc.play()
+                }
+            }
+
+            viewModel.donePlaybackRequest()
+        }
     }
 
 
@@ -68,7 +84,6 @@ class MainActivity : AppCompatActivity() {
 
             mediaController = MediaController(this@MainActivity, mediaBrowser.sessionToken)
             mediaController.registerCallback(controllerCallback)
-            viewModel.mediaController = mediaController
         }
     }
 

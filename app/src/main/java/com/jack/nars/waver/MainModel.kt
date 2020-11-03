@@ -1,35 +1,33 @@
 package com.jack.nars.waver
 
-import android.media.session.MediaController
 import android.media.session.PlaybackState
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.jack.nars.waver.data.LoopRepository
+import androidx.lifecycle.map
+import com.jack.nars.waver.data.ControlsRepository
+import com.jack.nars.waver.data.PlaybackRequest
 
 
 class MainModel @ViewModelInject
-constructor(private val loopRepository: LoopRepository) : ViewModel() {
+constructor(private val controlsRepository: ControlsRepository) : ViewModel() {
+
     fun onPlaybackUpdate(playbackState: PlaybackState?) {
-        _isPlaying.value = (playbackState?.state == PlaybackState.STATE_PLAYING)
+        val isPlaying = playbackState?.state == PlaybackState.STATE_PLAYING
+        controlsRepository.notifyPlay(isPlaying)
     }
 
-    var mediaController: MediaController? = null
-        set(value) {
-            field = value?.also { onPlaybackUpdate(it.playbackState) }
-        }
+    fun donePlaybackRequest() {
+        controlsRepository.donePlaybackRequest()
+    }
 
-    private val _isPlaying = MutableLiveData(false)
-    val isPlaying: LiveData<Boolean> = _isPlaying
+    val isPlaying: LiveData<Boolean> = controlsRepository.state.map {
+        it == com.jack.nars.waver.data.PlaybackState.PLAYING
+    }
+
+    val playbackRequest = controlsRepository.request
 
     fun onPlayPause() {
-        val mc = mediaController ?: return
-
-        if (mc.playbackState?.state == PlaybackState.STATE_PLAYING) {
-            mc.transportControls.pause()
-        } else {
-            mc.transportControls.play()
-        }
+        controlsRepository.sendPlaybackRequest(PlaybackRequest.PLAY_PAUSE)
     }
 }

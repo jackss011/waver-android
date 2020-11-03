@@ -20,7 +20,5 @@ constructor(
     val hasPlayableComposition: LiveData<Boolean> =
         loopRepository.activeCompositionData.map { it != null && it.isPlayable }
 
-//    val isPlaying = loopRepository.isPlaying
-
     val masterVolume = controlsRepository.masterVolume
 }
