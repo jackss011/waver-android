@@ -72,8 +72,6 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
         mediaSession?.release()
 
         playersMesh.release()
-        loopsRepository.activeCompositionData.removeObserver(compositionObserver)
-        controlsRepository.masterVolume.removeObserver(masterVolumeObserver)
 
         unregisterReceiver(mediaNotificationReceiver)
     }
@@ -174,6 +172,9 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
     }
 
 
+    private lateinit var playersMesh: PlayersMesh
+
+
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
 
@@ -182,15 +183,14 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
             playersMesh.addLoop(it)
         }
 
-        loopsRepository.activeCompositionData.observeForever(compositionObserver)
-        controlsRepository.masterVolume.observeForever(masterVolumeObserver)
+        loopsRepository.activeCompositionData.observe(owner = this) {
+            updateCurrentComposition(it)
+        }
+
+        controlsRepository.masterVolume.observe(owner = this) {
+            updateMasterVolume(it)
+        }
     }
-
-
-    private lateinit var playersMesh: PlayersMesh
-
-    private val compositionObserver = Observer<CompositionData?> { updateCurrentComposition(it) }
-    private val masterVolumeObserver = Observer<Float> { updateMasterVolume(it) }
 
 
     private fun updateCurrentComposition(c: CompositionData?) {
@@ -206,8 +206,6 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
         playersMesh.masterVolume = it
     }
 
-
-    // TODO: add lifecycle to service
 
     // ===============================================
     // ================= NOTIFICATIONS ===============
