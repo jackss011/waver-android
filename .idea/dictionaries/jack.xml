@@ -2,6 +2,7 @@
   <dictionary name="jack">
     <words>
       <w>bottombar</w>
+      <w>bottomsheet</w>
       <w>crossfade</w>
       <w>dataset</w>
       <w>lockscreen</w>
