@@ -12,6 +12,7 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.google.android.material.slider.Slider
 import com.jack.nars.waver.MainModel
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentBottomBarBinding
@@ -53,32 +54,23 @@ class BottomBarFragment : Fragment() {
 }
 
 
-@BindingAdapter("volume")
-fun volumeAdapter(bar: SeekBar, volume: Float) {
-    val newValue = min((volume * 100).roundToInt(), 100)
-
-    if (bar.progress != newValue) {
-        bar.progress = newValue
+// Get value from VM
+@BindingAdapter("bindUnitaryValue")
+fun volumeAdapter(bar: Slider, value: Float) {
+    if (bar.value != value) {
+        bar.value = value
     }
 }
 
-@InverseBindingAdapter(attribute = "volume")
-fun inverseVolumeAdapter(bar: SeekBar): Float {
-    return min(bar.progress.toFloat() / 100f, 1f)
+
+// Set value to VM
+@InverseBindingAdapter(attribute = "bindUnitaryValue")
+fun inverseVolumeAdapter(bar: Slider): Float {
+    return bar.value.coerceIn(0f, 1f)
 }
 
 
-@BindingAdapter("app:volumeAttrChanged")
-fun setListeners(
-    bar: SeekBar,
-    attrChange: InverseBindingListener
-) {
-    bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            attrChange.onChange()
-        }
-
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    })
+@BindingAdapter("app:bindUnitaryValueAttrChanged")
+fun setListeners(bar: Slider, attrChange: InverseBindingListener) {
+    bar.addOnChangeListener { _, _, _ -> attrChange.onChange() }
 }

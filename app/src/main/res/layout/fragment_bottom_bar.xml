@@ -31,7 +31,7 @@
                 android:enabled="@{model_view.hasPlayableComposition}"
                 android:text='@{model_main.isPlaying ? "Pause" : "Play"}' />
 
-        <SeekBar
+        <com.google.android.material.slider.Slider
                 android:id="@+id/volume_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -39,7 +39,9 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                volume="@={model_view.masterVolume}"
+                android:valueFrom="0.0"
+                android:valueTo="1.0"
+                bindUnitaryValue="@={model_view.masterVolume}"
                 app:layout_constraintBottom_toTopOf="@+id/play_pause"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
