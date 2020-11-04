@@ -1,11 +1,10 @@
-package com.jack.nars.waver.bottombar
+package com.jack.nars.waver.ui.bottombar
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
@@ -17,10 +16,6 @@ import com.jack.nars.waver.MainModel
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentBottomBarBinding
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Math.round
-import kotlin.math.abs
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint

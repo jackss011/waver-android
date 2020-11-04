@@ -7,7 +7,7 @@
 
         <variable
                 name="model_view"
-                type="com.jack.nars.waver.bottombar.BottomBarModel" />
+                type="com.jack.nars.waver.ui.bottombar.BottomBarModel" />
 
         <variable
                 name="model_main"
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#424242"
-            tools:context=".bottombar.BottomBarFragment">
+            tools:context=".ui.bottombar.BottomBarFragment">
 
         <Button
                 android:id="@+id/play_pause"

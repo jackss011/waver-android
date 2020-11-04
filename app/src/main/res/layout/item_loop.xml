@@ -6,7 +6,7 @@
     <data>
         <variable
                 name="info"
-                type="com.jack.nars.waver.list.LoopInfo" />
+                type="com.jack.nars.waver.ui.list.LoopInfo" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

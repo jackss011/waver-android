@@ -1,4 +1,4 @@
-package com.jack.nars.waver.bottombar
+package com.jack.nars.waver.ui.bottombar
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject

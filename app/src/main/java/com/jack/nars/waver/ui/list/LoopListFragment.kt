@@ -1,4 +1,4 @@
-package com.jack.nars.waver.list
+package com.jack.nars.waver.ui.list
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,23 +1,15 @@
-package com.jack.nars.waver.list
+package com.jack.nars.waver.ui.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.TextView
-import androidx.databinding.BaseObservable
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.InverseBindingAdapter
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jack.nars.waver.R
-import com.jack.nars.waver.data.Loop
 import com.jack.nars.waver.databinding.ItemLoopBinding
-import kotlinx.android.synthetic.main.item_loop.view.*
 import timber.log.Timber
 import kotlin.math.round
 
