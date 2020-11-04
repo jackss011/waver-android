@@ -15,7 +15,8 @@
             android:layout_margin="4dp"
             android:background="#FFFFFF"
             android:elevation="1dp"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:backgroundTint="@color/colorOnSurface">
 
         <TextView
                 android:id="@+id/item_title"
@@ -23,11 +24,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@{info.title}"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/item_switch"
                 app:layout_constraintStart_toEndOf="@+id/item_switch"
                 app:layout_constraintTop_toTopOf="@+id/item_switch"
-                tools:text="Loop Title" />
+                tools:text="Loop Title"
+                android:textColor="#eeFFFFFF" />
 
         <SeekBar
                 android:id="@+id/item_seek"
