@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.ItemLoopBinding
+import com.jack.nars.waver.ui.setupAsIntensity
 import timber.log.Timber
 import kotlin.math.round
 
@@ -59,11 +60,13 @@ class LoopAdapter(
                 }
 
                 itemSeek.apply {
-                    progress = round(controls.intensity * itemSeek.max).toInt()
+                    value = controls.intensity
 
-                    setUpdateListener {
-                        viewModel.onLoopIntensity(info.id, it)
+                    addOnChangeListener { _, value, _ ->
+                        viewModel.onLoopIntensity(info.id, value)
                     }
+
+                    setupAsIntensity()
                 }
             }
         }
@@ -85,16 +88,16 @@ class LoopAdapter(
 }
 
 
-fun SeekBar.setUpdateListener(callback: (intensity: Float) -> Unit) {
-    setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            callback(progress.toFloat() / max)
-        }
-
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-    })
-}
+//fun SeekBar.setUpdateListener(callback: (intensity: Float) -> Unit) {
+//    setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//            callback(progress.toFloat() / max)
+//        }
+//
+//        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//    })
+//}
 
 
 //@BindingAdapter("title")

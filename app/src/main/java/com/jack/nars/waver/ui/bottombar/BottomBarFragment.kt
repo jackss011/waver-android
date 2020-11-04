@@ -15,6 +15,7 @@ import com.google.android.material.slider.Slider
 import com.jack.nars.waver.MainModel
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentBottomBarBinding
+import com.jack.nars.waver.ui.setupAsIntensity
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -42,30 +43,10 @@ class BottomBarFragment : Fragment() {
             playPause.setOnClickListener {
                 mainModel.onPlayPause()
             }
+
+            volumeBar.setupAsIntensity()
         }
 
         return binding.root
     }
-}
-
-
-// Get value from VM
-@BindingAdapter("bindUnitaryValue")
-fun volumeAdapter(bar: Slider, value: Float) {
-    if (bar.value != value) {
-        bar.value = value
-    }
-}
-
-
-// Set value to VM
-@InverseBindingAdapter(attribute = "bindUnitaryValue")
-fun inverseVolumeAdapter(bar: Slider): Float {
-    return bar.value.coerceIn(0f, 1f)
-}
-
-
-@BindingAdapter("app:bindUnitaryValueAttrChanged")
-fun setListeners(bar: Slider, attrChange: InverseBindingListener) {
-    bar.addOnChangeListener { _, _, _ -> attrChange.onChange() }
 }
