@@ -33,7 +33,6 @@ android {
         }
     }
     buildFeatures {
-//        viewBinding true
         dataBinding true
     }
     compileOptions {
@@ -46,26 +45,28 @@ android {
 }
 
 dependencies {
-    def lifecycle_version = "2.2.0"
-    def timber_version = "4.7.1"
-    def lifecycle_hilt_version = "1.0.0-alpha02"
-
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // AndroidX
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.media:media:1.2.0"
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'com.google.android.material:material:1.3.0-alpha03'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    // Tests
+    // Material
+    implementation 'com.google.android.material:material:1.3.0-alpha03'
+
+    // Testing
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Lifecycle
+    def lifecycle_version = "2.2.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
@@ -84,9 +85,10 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     // viewModel()
+    def lifecycle_hilt_version = "1.0.0-alpha02"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$lifecycle_hilt_version"
     kapt "androidx.hilt:hilt-compiler:$lifecycle_hilt_version"
 
     // Utils
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
