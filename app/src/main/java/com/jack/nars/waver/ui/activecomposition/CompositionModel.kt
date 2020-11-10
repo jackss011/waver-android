@@ -29,4 +29,8 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     fun onPreviewLoopIntensity(id: String, intensity: Float) {
         loopRepository.setLoopIntensityPreview(id, intensity)
     }
+
+    fun stopAllPreviews() {
+        loopRepository.stopAllLoopIntensityPreview()
+    }
 }

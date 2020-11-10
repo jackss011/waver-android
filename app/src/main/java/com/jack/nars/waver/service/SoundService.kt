@@ -177,8 +177,9 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
             playersMesh.addLoop(it)
         }
 
-        loopsRepository.activeCompositionData.observe(owner = this) {
+        loopsRepository.playableComposition.observe(owner = this) {
             updateCurrentComposition(it)
+//            Timber.v("New composition to sound service: $it")
         }
 
         controlsRepository.masterVolume.observe(owner = this) {

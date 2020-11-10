@@ -85,6 +85,8 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
         }
 
         playableComposition.addSource(intensityPreviewMap) {
+//            Timber.v("Update intensity preview map: $it")
+
             playableComposition.value =
                 calculatePlayableComposition(activeCompositionData.value!!, it)
 

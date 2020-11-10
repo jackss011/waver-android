@@ -56,8 +56,10 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
                     }
                 })
 
-                addOnChangeListener { _: Slider, value: Float, _: Boolean ->
-                    listener?.onLoopIntensityUpdate(di.id, value)
+                addOnChangeListener { _: Slider, value: Float, fromUser: Boolean ->
+//                    Timber.v("LI - from user: ${fromUser}")
+                    if (fromUser)
+                        listener?.onLoopIntensityUpdate(di.id, value)
                 }
             }
         }
