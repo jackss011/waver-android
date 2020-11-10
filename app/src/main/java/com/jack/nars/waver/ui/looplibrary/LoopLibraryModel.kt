@@ -11,7 +11,13 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
 
     val staticLoops = loopRepository.staticLoops
     val activeLoopIds = loopRepository.activeCompositionData
-        .map { composition -> composition?.loops?.map { it.id } ?: emptyList() }
+        .map { composition -> composition.loops.map { it.id } }
 
-    fun onLoopClicked() {}
+
+    fun onLoopClicked(id: String, checked: Boolean) {
+        if (checked)
+            loopRepository.activateLoop(id)
+        else
+            loopRepository.deactivateLoop(id)
+    }
 }

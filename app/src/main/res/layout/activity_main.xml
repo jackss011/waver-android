@@ -23,7 +23,7 @@
 
             <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/list"
-                    android:name="com.jack.nars.waver.ui.list.LoopListFragment"
+                    android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
