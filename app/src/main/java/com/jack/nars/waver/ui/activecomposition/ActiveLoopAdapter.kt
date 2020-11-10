@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.Slider
 import com.jack.nars.waver.databinding.ItemActiveLoopBinding
+import com.jack.nars.waver.ui.setupAsIntensity
 import timber.log.Timber
 
 
@@ -44,6 +45,8 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
 
             binding.intensitySlider.run {
                 value = di.intensity
+
+                setupAsIntensity()
 
                 clearOnChangeListeners()
                 clearOnSliderTouchListeners()
