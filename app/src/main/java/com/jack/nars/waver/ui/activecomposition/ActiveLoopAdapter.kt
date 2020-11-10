@@ -6,17 +6,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.slider.Slider
 import com.jack.nars.waver.databinding.ItemActiveLoopBinding
 import timber.log.Timber
 
 
 class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>(ItemCallback()) {
+    var listener: Listener? = null
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = ItemActiveLoopBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
+
         Timber.d("Created view holder")
 
         return Holder(binding)
@@ -24,17 +29,44 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
 
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
+        Timber.d("Binding view holder: ${getItem(position)}")
+
         holder.run {
-            bindTo(getItem(position))
+            bindTo(getItem(position), listener)
             binding.executePendingBindings()
         }
     }
 
 
     class Holder(val binding: ItemActiveLoopBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindTo(di: LoopDisplayInfo) {
+        fun bindTo(di: LoopDisplayInfo, listener: Listener?) {
             binding.titleTxt.text = di.title
+
+            binding.intensitySlider.run {
+                value = di.intensity
+
+                clearOnChangeListeners()
+                clearOnSliderTouchListeners()
+
+                addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+                    override fun onStartTrackingTouch(slider: Slider) {}
+
+                    override fun onStopTrackingTouch(slider: Slider) {
+                        listener?.onLoopIntensityConfirmed(di.id, slider.value)
+                    }
+                })
+
+                addOnChangeListener { _: Slider, value: Float, _: Boolean ->
+                    listener?.onLoopIntensityUpdate(di.id, value)
+                }
+            }
         }
+    }
+
+
+    interface Listener {
+        fun onLoopIntensityUpdate(id: String, value: Float)
+        fun onLoopIntensityConfirmed(id: String, value: Float)
     }
 }
 

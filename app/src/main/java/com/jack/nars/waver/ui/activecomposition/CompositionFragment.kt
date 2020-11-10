@@ -17,13 +17,17 @@ import timber.log.Timber
 class CompositionFragment : Fragment() {
     private val model: CompositionModel by viewModels()
     private lateinit var binding: FragmentCompositionBinding
+
     private lateinit var loopAdapter: ActiveLoopAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        loopAdapter = ActiveLoopAdapter()
+        loopAdapter = ActiveLoopAdapter().apply {
+            listener = loopAdapterListener
+        }
 
         binding = FragmentCompositionBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = requireActivity()
@@ -42,5 +46,16 @@ class CompositionFragment : Fragment() {
         Timber.d("View created")
 
         return binding.root
+    }
+
+
+    private val loopAdapterListener = object : ActiveLoopAdapter.Listener {
+        override fun onLoopIntensityUpdate(id: String, value: Float) {
+            model.onPreviewLoopIntensity(id, value)
+        }
+
+        override fun onLoopIntensityConfirmed(id: String, value: Float) {
+            model.onChangeLoopIntensity(id, value)
+        }
     }
 }

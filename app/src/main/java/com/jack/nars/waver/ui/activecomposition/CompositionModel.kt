@@ -8,7 +8,7 @@ import androidx.lifecycle.map
 import com.jack.nars.waver.data.LoopRepository
 
 
-data class LoopDisplayInfo(val id: String, val title: String)
+data class LoopDisplayInfo(val id: String, val title: String, val intensity: Float = .5f)
 
 
 class CompositionModel @ViewModelInject
@@ -17,11 +17,16 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
         c.loops.mapNotNull { item ->
             val loop =
                 loopRepository.staticLoops.find { item.id == it.id } ?: return@mapNotNull null
-            LoopDisplayInfo(loop.id, loop.title)
+            LoopDisplayInfo(loop.id, loop.title, item.volume)
         }
     }
 
     fun onChangeLoopIntensity(id: String, intensity: Float) {
         loopRepository.setLoopIntensity(id, intensity)
+        loopRepository.stopLoopIntensityPreview(id)
+    }
+
+    fun onPreviewLoopIntensity(id: String, intensity: Float) {
+        loopRepository.setLoopIntensityPreview(id, intensity)
     }
 }
