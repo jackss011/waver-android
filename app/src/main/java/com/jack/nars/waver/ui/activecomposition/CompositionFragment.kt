@@ -1,6 +1,5 @@
 package com.jack.nars.waver.ui.activecomposition
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +67,11 @@ class CompositionFragment : Fragment() {
         override fun onLoopIntensityConfirmed(id: String, value: Float) {
 //            Timber.v("LI - CONFIRM")
             model.onChangeLoopIntensity(id, value)
+        }
+
+        override fun onLoopMore(id: String, itemView: View) {
+            val holder = binding.loopList.getChildViewHolder(itemView) as ActiveLoopAdapter.Holder
+            holder.toggleExpansion()
         }
     }
 

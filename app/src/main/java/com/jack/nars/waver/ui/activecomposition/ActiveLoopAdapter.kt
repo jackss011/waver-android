@@ -41,6 +41,8 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
 
     class Holder(val binding: ItemActiveLoopBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bindTo(di: LoopDisplayInfo, listener: Listener?) {
+            hideExpansion()
+
             binding.titleTxt.text = di.title
 
             binding.intensitySlider.run {
@@ -65,6 +67,22 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
                         listener?.onLoopIntensityUpdate(di.id, value)
                 }
             }
+
+            binding.expandBtn.run {
+                setOnClickListener {
+                    listener?.onLoopMore(di.id, itemView)
+                }
+            }
+        }
+
+        private val toHide = binding.listBtns
+
+        fun toggleExpansion() {
+            toHide.visibility = if (toHide.visibility == View.GONE) View.VISIBLE else View.GONE
+        }
+
+        fun hideExpansion() {
+            toHide.visibility = View.GONE
         }
     }
 
@@ -72,6 +90,7 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
     interface Listener {
         fun onLoopIntensityUpdate(id: String, value: Float)
         fun onLoopIntensityConfirmed(id: String, value: Float)
+        fun onLoopMore(id: String, itemView: View)
     }
 }
 
