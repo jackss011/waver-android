@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentCompositionBinding
+import com.jack.nars.waver.ui.SpacingBetween
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -35,11 +37,13 @@ class CompositionFragment : Fragment() {
             loopList.apply {
                 adapter = loopAdapter
                 layoutManager = LinearLayoutManager(requireActivity())
+                addItemDecoration(SpacingBetween(resources.getDimensionPixelSize(R.dimen.list_spacing)))
             }
         }
 
         model.activeLoops.observe(viewLifecycleOwner) {
             loopAdapter.submitList(it)
+            binding.loopList.invalidateItemDecorations()
             Timber.d("Update active loops: $it")
         }
 
@@ -54,11 +58,11 @@ class CompositionFragment : Fragment() {
 //            Timber.v("LI - UPDATE")
             model.onPreviewLoopIntensity(id, value)
 
-            if (value > .85f) {
-                val i = Intent(Intent.ACTION_MAIN)
-                i.addCategory(Intent.CATEGORY_HOME)
-                startActivity(i)
-            }
+//            if (value > .85f) {
+//                val i = Intent(Intent.ACTION_MAIN)
+//                i.addCategory(Intent.CATEGORY_HOME)
+//                startActivity(i)
+//            }
         }
 
         override fun onLoopIntensityConfirmed(id: String, value: Float) {
@@ -66,6 +70,7 @@ class CompositionFragment : Fragment() {
             model.onChangeLoopIntensity(id, value)
         }
     }
+
 
     override fun onPause() {
         super.onPause()
