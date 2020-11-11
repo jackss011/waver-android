@@ -33,4 +33,8 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
     fun stopAllPreviews() {
         loopRepository.stopAllLoopIntensityPreview()
     }
+
+    fun onRemoveLoop(id: String) {
+        loopRepository.deactivateLoop(id)
+    }
 }

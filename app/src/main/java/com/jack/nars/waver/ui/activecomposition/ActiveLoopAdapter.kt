@@ -1,12 +1,15 @@
 package com.jack.nars.waver.ui.activecomposition
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.Slider
+import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.ItemActiveLoopBinding
 import com.jack.nars.waver.ui.setupAsIntensity
 import timber.log.Timber
@@ -39,9 +42,27 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
     }
 
 
+    override fun onViewDetachedFromWindow(holder: Holder) {
+        super.onViewDetachedFromWindow(holder)
+
+        holder.unbind()
+    }
+
+
     class Holder(val binding: ItemActiveLoopBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private val popup: PopupMenu by lazy {
+            val wrapper = ContextThemeWrapper(binding.root.context, R.style.Widget_Waver_PopupMenu)
+            val popup = PopupMenu(wrapper, itemView.findViewById(R.id.expandBtn))
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                popup.setForceShowIcon(true)
+            }
+            popup.menuInflater.inflate(R.menu.active_loop_options, popup.menu)
+            popup
+        }
+
+
         fun bindTo(di: LoopDisplayInfo, listener: Listener?) {
-            hideExpansion()
 
             binding.titleTxt.text = di.title
 
@@ -68,29 +89,30 @@ class ActiveLoopAdapter : ListAdapter<LoopDisplayInfo, ActiveLoopAdapter.Holder>
                 }
             }
 
-            binding.expandBtn.run {
-                setOnClickListener {
-                    listener?.onLoopMore(di.id, itemView)
+            binding.expandBtn.setOnClickListener {
+                popup.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.menu_loop_remove -> listener?.onRemoveLoop(di.id)
+                    }
+                    true
                 }
+
+                popup.show()
             }
         }
 
-        private val toHide = binding.listBtns
 
-        fun toggleExpansion() {
-            toHide.visibility = if (toHide.visibility == View.GONE) View.VISIBLE else View.GONE
-        }
-
-        fun hideExpansion() {
-            toHide.visibility = View.GONE
+        fun unbind() {
+            popup.dismiss()
         }
     }
 
 
     interface Listener {
-        fun onLoopIntensityUpdate(id: String, value: Float)
-        fun onLoopIntensityConfirmed(id: String, value: Float)
-        fun onLoopMore(id: String, itemView: View)
+        fun onLoopIntensityUpdate(id: String, value: Float) {}
+        fun onLoopIntensityConfirmed(id: String, value: Float) {}
+        fun onLoopMore(id: String, itemView: View) {}
+        fun onRemoveLoop(id: String) {}
     }
 }
 
@@ -104,3 +126,15 @@ private class ItemCallback : DiffUtil.ItemCallback<LoopDisplayInfo>() {
         return newItem == oldItem
     }
 }
+
+
+//        fun toggleExpansion() {
+//            setExpansion(!isExpanded)
+//        }
+//
+//        val isExpanded get() = binding.listBtns.visibility == View.VISIBLE
+//
+//        fun setExpansion(expand: Boolean) {
+//            binding.expandBtn.rotation = if(expand) 180f else 0f
+//            binding.listBtns.visibility = if(expand) View.VISIBLE else View.GONE
+//        }

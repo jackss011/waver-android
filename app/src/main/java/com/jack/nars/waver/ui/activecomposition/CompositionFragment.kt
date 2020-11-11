@@ -1,9 +1,11 @@
 package com.jack.nars.waver.ui.activecomposition
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,8 +48,6 @@ class CompositionFragment : Fragment() {
             Timber.d("Update active loops: $it")
         }
 
-        Timber.d("View created")
-
         return binding.root
     }
 
@@ -56,12 +56,6 @@ class CompositionFragment : Fragment() {
         override fun onLoopIntensityUpdate(id: String, value: Float) {
 //            Timber.v("LI - UPDATE")
             model.onPreviewLoopIntensity(id, value)
-
-//            if (value > .85f) {
-//                val i = Intent(Intent.ACTION_MAIN)
-//                i.addCategory(Intent.CATEGORY_HOME)
-//                startActivity(i)
-//            }
         }
 
         override fun onLoopIntensityConfirmed(id: String, value: Float) {
@@ -70,8 +64,12 @@ class CompositionFragment : Fragment() {
         }
 
         override fun onLoopMore(id: String, itemView: View) {
-            val holder = binding.loopList.getChildViewHolder(itemView) as ActiveLoopAdapter.Holder
-            holder.toggleExpansion()
+//            val holder = binding.loopList.getChildViewHolder(itemView) as ActiveLoopAdapter.Holder
+//            holder.toggleExpansion()
+        }
+
+        override fun onRemoveLoop(id: String) {
+            model.onRemoveLoop(id)
         }
     }
 

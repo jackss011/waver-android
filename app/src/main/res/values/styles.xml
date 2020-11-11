@@ -29,4 +29,18 @@
         <item name="cornerRadius">20dp</item>
     </style>
 
+    <style name="Widget.Waver.PopupMenu" parent="@style/Widget.MaterialComponents.PopupMenu">
+        <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <item name="android:textColor">@color/textPopup</item>
+        <item name="android:iconTint">@color/textPopup</item>
+
+    </style>
+
 </resources>
+
+
+        <!--        <item name="android:popupMenuStyle">@style/Widget.Waver.PopupMenu</item>-->
+        <!--        <item name="popupMenuStyle">@style/Widget.Waver.PopupMenu</item>-->
+        <!--        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <!--        <item name="android:popupMenu"-->
