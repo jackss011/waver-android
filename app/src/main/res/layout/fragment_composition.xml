@@ -8,16 +8,57 @@
             android:layout_height="match_parent"
             tools:context=".ui.activecomposition.CompositionFragment">
 
+        <LinearLayout
+                android:id="@+id/no_loops_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:animateLayoutChanges="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/loop_list"
+                tools:visibility="visible">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_no_loops_ig"
+                    android:textAppearance="@style/TextAppearance.Waver.BackgroundBlend.Big" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_no_loops_small"
+                    android:textAppearance="@style/TextAppearance.Waver.BackgroundBlend.Small" />
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/main_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/title_composition"
+                android:textAppearance="@style/TextAppearance.Waver.BigTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/loop_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_active_loop"
-                tools:itemCount="2" />
+                app:layout_constraintTop_toBottomOf="@+id/main_title"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_active_loop">
+
+        </androidx.recyclerview.widget.RecyclerView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

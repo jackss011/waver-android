@@ -25,17 +25,17 @@ import kotlin.math.pow
 class DebugActivity : AppCompatActivity() {
 
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_dashboard -> {
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_notifications -> {
-                return@OnNavigationItemSelectedListener true
-            }
-        }
+//        when (item.itemId) {
+//            R.id.navigation_home -> {
+//                return@OnNavigationItemSelectedListener true
+//            }
+//            R.id.navigation_dashboard -> {
+//                return@OnNavigationItemSelectedListener true
+//            }
+//            R.id.navigation_notifications -> {
+//                return@OnNavigationItemSelectedListener true
+//            }
+//        }
         false
     }
 

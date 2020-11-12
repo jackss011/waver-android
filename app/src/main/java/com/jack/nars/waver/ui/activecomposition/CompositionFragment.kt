@@ -1,11 +1,9 @@
 package com.jack.nars.waver.ui.activecomposition
 
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +44,7 @@ class CompositionFragment : Fragment() {
             loopAdapter.submitList(it)
             binding.loopList.invalidateItemDecorations()
             Timber.d("Update active loops: $it")
+            showNoLoopUI(it.isNotEmpty())
         }
 
         return binding.root
@@ -78,5 +77,10 @@ class CompositionFragment : Fragment() {
         super.onPause()
 
         model.stopAllPreviews()
+    }
+
+
+    private fun showNoLoopUI(hasLoops: Boolean) {
+        binding.noLoopsHint.visibility = if (hasLoops) View.GONE else View.VISIBLE
     }
 }

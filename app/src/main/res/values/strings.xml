@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Waver</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="btn_remove_loop">Remove</string>
+    <string name="title_composition">Composition</string>
+    <string name="hint_no_loops_ig">No Loops</string>
+    <string name="hint_no_loops_small">Add a loop from the library</string>
+    <string name="title_loop_library">Loop Library</string>
 </resources>
