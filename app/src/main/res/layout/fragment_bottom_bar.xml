@@ -20,31 +20,49 @@
             android:background="@color/colorOnSurface"
             tools:context=".ui.bottombar.BottomBarFragment">
 
-        <Button
-                android:id="@+id/play_pause"
+        <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:alpha="0.3"
+                android:contentDescription="@string/desc_volume_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/volume_bar"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/volume_bar"
+                app:srcCompat="@drawable/ic_volume_24"
+                app:tint="#000" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/play_pause"
+                style="@style/Widget.Waver.Button.IconOnly"
+                playIcon="@{model_main.isPlaying}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:enabled="@{model_view.hasPlayableComposition}"
-                android:text='@{model_main.isPlaying ? "Pause" : "Play"}' />
+                app:iconSize="36dp"
+                app:iconTint="@color/play_button"
+                app:layout_constraintBottom_toBottomOf="@+id/volume_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/volume_bar"
+                tools:icon='@drawable/ic_play_24' />
 
         <com.google.android.material.slider.Slider
                 android:id="@+id/volume_bar"
+                bindUnitaryValue="@={model_view.masterVolume}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="2dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="4dp"
                 android:layout_marginBottom="16dp"
                 android:valueFrom="0.0"
                 android:valueTo="1.0"
-                bindUnitaryValue="@={model_view.masterVolume}"
-                app:layout_constraintBottom_toTopOf="@+id/play_pause"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/play_pause"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
