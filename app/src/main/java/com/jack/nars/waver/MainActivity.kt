@@ -84,6 +84,8 @@ class MainActivity : AppCompatActivity() {
 
             mediaController = MediaController(this@MainActivity, mediaBrowser.sessionToken)
             mediaController.registerCallback(controllerCallback)
+
+            onStateUpdate(mediaController.playbackState)
         }
     }
 
@@ -91,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     private val controllerCallback = object : MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             Timber.i("Playback state changed")
-            viewModel.onPlaybackUpdate(state)
+            onStateUpdate(state)
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -100,58 +102,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-//    private fun buildTransportControls() {
-//        binding.playPause.apply {
-//            fun play() {
-//                val testComposition = CompositionData(
-//                    loops = listOf(
-//                        CompositionItem("test:brown_noise", 0.5f),
-//                        CompositionItem("test:ambient_music", volume = 0.3f)
-//                    )
-//                )
-//
-////                mediaController.transportControls.playFromMediaId(Json.encodeToString(testComposition), null)
-//                mediaController.transportControls.play()
-//            }
-//
-//            setOnClickListener {
-//                when (mediaController.playbackState?.state) {
-//                    PlaybackState.STATE_PLAYING -> mediaController.transportControls.pause()
-//                    PlaybackState.STATE_PAUSED -> play()
-//                    PlaybackState.STATE_NONE -> play()
-//                    PlaybackState.STATE_STOPPED -> Timber.w("Can't play from stopped state")
-//                    else -> {}
-//                }
-//            }
-//        }
-//
-//        binding.volumeBar.apply {
-//            setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-//                override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                    bar?.also {
-//                        val v = progress.toFloat() / it.max
-//                        mediaController.sendCommand(
-//                            COMMAND_MASTER_VOLUME,
-//                            Bundle(1).apply { putFloat(null, v) },
-//                            null
-//                        )
-//                    }
-//                }
-//
-//                override fun onStartTrackingTouch(p0: SeekBar?) {}
-//
-//                override fun onStopTrackingTouch(p0: SeekBar?) {}
-//            })
-//        }
-//
-//        updatePlaybackState()
-//    }
-//
-//
-//    private fun updatePlaybackState() {
-//        if(mediaController.playbackState?.state != PlaybackState.STATE_PLAYING)
-//            binding.playPause.text = "Play"
-//        else
-//            binding.playPause.text = "Pause"
-//    }
+    private fun onStateUpdate(state: PlaybackState?) {
+        viewModel.onPlaybackUpdate(state)
+    }
 }

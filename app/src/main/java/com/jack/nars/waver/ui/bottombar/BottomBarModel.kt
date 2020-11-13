@@ -18,7 +18,7 @@ constructor(
 ) : ViewModel() {
 
     val hasPlayableComposition: LiveData<Boolean> =
-        loopRepository.activeCompositionData.map { it != null && it.isPlayable }
+        loopRepository.activeCompositionData.map { it.isPlayable }
 
     val masterVolume = controlsRepository.masterVolume
 }
