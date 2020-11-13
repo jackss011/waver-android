@@ -42,6 +42,7 @@ class BottomBarFragment : Fragment() {
             container,
             false
         ).apply {
+            // TODO refactor this stuff
             lifecycleOwner = this@BottomBarFragment
             modelView = viewModel
             modelMain = mainModel
@@ -50,7 +51,16 @@ class BottomBarFragment : Fragment() {
                 mainModel.onPlayPause()
             }
 
-            volumeBar.setupAsIntensity()
+            volumeBar.apply {
+                setupAsIntensity()
+                addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+                    override fun onStartTrackingTouch(slider: Slider) {}
+
+                    override fun onStopTrackingTouch(slider: Slider) {
+                        viewModel.onMasterVolumeConfirmed(slider.value)
+                    }
+                })
+            }
         }
 
         return binding.root

@@ -19,12 +19,13 @@ enum class PlaybackRequest {
 
 
 @Singleton
-class ControlsRepository @Inject constructor() {
+class ControlsRepository @Inject constructor(private val lastState: LastStateStorage) {
 
-    val masterVolume: MutableLiveData<Float> = MutableLiveData(1f)
+    val masterVolume: MutableLiveData<Float> = MutableLiveData(lastState.getMasterVolume())
 
     fun updateMasterVolume(volume: Float) {
         masterVolume.value = volume
+        lastState.saveMasterVolume(volume)
     }
 
     private val _state = MutableLiveData(PlaybackState.NOT_PLAYING)

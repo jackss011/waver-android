@@ -10,13 +10,20 @@ import javax.inject.Singleton
 
 
 @Singleton
-class LoopRepository @Inject constructor(@ApplicationContext appContext: Context) {
+class LoopRepository @Inject constructor(
+    @ApplicationContext appContext: Context,
+    private val lastState: LastStateStorage
+) {
 
     val staticLoops = StaticLoopsInflater.inflate(appContext)
 
 
     // ========== ACTIVE COMPOSITION ===========
-    private val _activeComposition = MutableLiveData(CompositionData())
+    private val initialComposition: CompositionData
+        get() =
+            lastState.getActiveComposition() ?: CompositionData()
+
+    private val _activeComposition = MutableLiveData(initialComposition)
     val activeCompositionData: LiveData<CompositionData> get() = _activeComposition
 
     private val compositionCache = CompositionCache()
@@ -24,11 +31,12 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
 
     fun updateActiveComposition(composition: CompositionData) {
         _activeComposition.value = composition
+        lastState.saveActiveComposition(composition)
     }
 
 
     fun resetActiveComposition() {
-        _activeComposition.value = CompositionData()
+        updateActiveComposition(CompositionData())
     }
 
 
@@ -59,8 +67,9 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
 
     fun setLoopIntensity(id: String, value: Float) {
         val old = _activeComposition.value!!
-        val new =
-            old.copy(loops = old.loops.map { if (it.id == id) it.copy(volume = value) else it })
+        val new = old.copy(
+            loops = old.loops.map { if (it.id == id) it.copy(volume = value) else it }
+        )
         updateActiveComposition(new)
     }
 

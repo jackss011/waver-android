@@ -21,4 +21,8 @@ constructor(
         loopRepository.activeCompositionData.map { it.isPlayable }
 
     val masterVolume = controlsRepository.masterVolume
+
+    fun onMasterVolumeConfirmed(v: Float) {
+        controlsRepository.updateMasterVolume(v)
+    }
 }
