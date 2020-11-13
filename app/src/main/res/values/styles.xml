@@ -57,7 +57,12 @@
         <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
         <item name="android:textColor">@color/textPopup</item>
         <item name="android:iconTint">@color/textPopup</item>
+    </style>
 
+    <style name="Widget.Waver.Chip.Loop" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="android:textColor">@color/textSurfaceTitle</item>
+        <item name="chipBackgroundColor">@color/colorOnSurface</item>
+        <item name="checkedIconTint">@color/textSurfaceTitle</item>
     </style>
 
 </resources>

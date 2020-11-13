@@ -29,13 +29,16 @@ class LoopLibraryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val chipGroup = getView()?.findViewById<ChipGroup>(R.id.chipgroup) ?: return
+        val inflater = LayoutInflater.from(requireActivity())
+
+        fun createBlankChip() = inflater.inflate(
+            R.layout.item_loop_chip, chipGroup, false
+        ) as Chip
 
         model.staticLoops.forEach { loop ->
-            val chip = Chip(context).apply {
+            val chip = createBlankChip().apply {
                 text = loop.title
-                id = ViewCompat.generateViewId()
                 tag = loop.id
-                isCheckable = true
                 setOnClickListener {
                     Timber.d("Clicked: ${loop.id}, set to ${this.isChecked}}")
                     model.onLoopClicked(loop.id, this.isChecked)
