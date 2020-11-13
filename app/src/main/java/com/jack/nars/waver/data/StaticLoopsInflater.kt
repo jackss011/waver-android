@@ -66,14 +66,10 @@ object StaticLoopsInflater {
 
 
     fun inflate(context: Context): Iterable<Loop> {
-//        val timer = TimingLogger("StaticLoopInflation", "inflate")
+//        val s = System.nanoTime()
 //        val res =  parseLoops(context.resources.getXml(R.xml.loops))
-//        timer.addSplit("end")
-//        timer.dumpToLog()
-
-//        val s = System.currentTimeMillis()
-//        val res =  parseLoops(context.resources.getXml(R.xml.loops))
-//        Timber.d("inflation time: ${System.currentTimeMillis() - s}ms")
+//        Timber.d("inflation time: ${(System.nanoTime() - s) / 1e6f}ms")
+//        return res
 
         return parseLoops(context.resources.getXml(R.xml.loops))
     }
