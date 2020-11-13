@@ -1,9 +1,12 @@
 package com.jack.nars.waver.data
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Resources
 import android.media.MediaPlayer
+import android.net.Uri
 import com.jack.nars.waver.players.BasePlayer
+import java.io.File
 import java.util.*
 
 
@@ -50,9 +53,11 @@ data class Loop(
          * @throws Resources.NotFoundException
          * */
         override fun setAsDataSource(context: Context, mp: MediaPlayer) {
-            val afd = context.resources.openRawResourceFd(id) ?: return
-            mp.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-            afd.close()
+            val uri = ContentResolver.SCHEME_ANDROID_RESOURCE +
+                    File.pathSeparator + File.separator + File.separator +
+                    context.packageName + File.separator + id
+
+            mp.setDataSource(context, Uri.parse(uri))
         }
     }
 }
