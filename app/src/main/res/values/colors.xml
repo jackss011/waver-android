@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#D81B60</color>
+    <color name="colorPrimaryDark">#633146</color>
+    <color name="colorAccent">#008577</color>
+    <color name="colorBackground">#2C2C2C</color>
+    <color name="colorOnSurface">#3F3F3F</color>
+    <color name="textPopup">#aaa</color>
+    <color name="textBackgroundBlend">#636363</color>
+    <color name="textSurfaceTitle">#ccc</color>
 </resources>

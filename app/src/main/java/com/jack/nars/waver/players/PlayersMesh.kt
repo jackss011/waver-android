@@ -1,9 +1,9 @@
-package com.jack.nars.waver.sound.players
+package com.jack.nars.waver.players
 
 import android.content.Context
 import android.util.Log
-import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.Loop
+import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.Loop
 
 
 class PlayersMesh(val context: Context) {
@@ -59,10 +59,11 @@ class PlayersMesh(val context: Context) {
     }
 
 
-    fun updateComposition(new: CompositionData) {
+    fun updateComposition(new: CompositionData?) {
 //        new.loops.forEach { if(it.id !in players.keys) Log.e("MeshPlayer", "Missing loop")}
+
         Log.d(TAG, "Composition:")
-        new.loops.forEach { Log.i(TAG, it.id) }
+        new?.loops?.forEach { Log.i(TAG, it.id) }
 
         Log.d(TAG, "Players:")
         players.keys.forEach { Log.i(TAG, it) }
@@ -72,8 +73,14 @@ class PlayersMesh(val context: Context) {
         val old = this.composition
         this.composition = new
 
+        // if new composition is null stop all players and return
+        if (new == null) {
+            pause()
+            return
+        }
+
         // remove old loops
-        if(old != null) {
+        if (old != null) {
             val oldIds = old.loops.map { it.id }
             val newIds = new.loops.map { it.id }
             val removed = (oldIds - newIds)

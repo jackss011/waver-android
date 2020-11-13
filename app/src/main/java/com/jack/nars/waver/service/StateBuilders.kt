@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.MediaMetadata
 import android.media.session.PlaybackState
 import com.jack.nars.waver.R
-import com.jack.nars.waver.sound.CompositionData
+import com.jack.nars.waver.data.CompositionData
 
 
 object Builders {

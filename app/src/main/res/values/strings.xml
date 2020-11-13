@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Waver</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+
+    <string name="btn_remove_loop">Remove</string>
+    <string name="title_composition">Composition</string>
+    <string name="hint_no_loops_ig">No Loops</string>
+    <string name="hint_no_loops_small">Add a loop from the library</string>
+    <string name="title_loop_library">Loop Library</string>
+    <string name="desc_volume_icon">Volume icon</string>
 </resources>

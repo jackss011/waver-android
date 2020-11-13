@@ -15,34 +15,70 @@ import android.app.PendingIntent
 import android.content.*
 import android.os.IBinder
 import android.os.ResultReceiver
+import android.view.Display
+import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.jack.nars.waver.MainActivity
-import com.jack.nars.waver.sound.CompositionData
-import com.jack.nars.waver.sound.LoopLoader
-import com.jack.nars.waver.sound.players.*
+import com.jack.nars.waver.data.CompositionData
+import com.jack.nars.waver.data.ControlsRepository
+import com.jack.nars.waver.data.LoopRepository
+import com.jack.nars.waver.players.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import java.util.*
+import javax.inject.Inject
 
-const val COMMAND_MASTER_VOLUME = "COMMAND_MASTER_VOLUME"
 
+@AndroidEntryPoint
+class SoundService : MediaBrowserService(), LifecycleOwner {
+    var showVolumeAction = false
+        private set
 
-class SoundService : MediaBrowserService() {
     var mediaSession: MediaSession? = null
         private set
 
+    @Inject
+    lateinit var loopsRepository: LoopRepository
+
+    @Inject
+    lateinit var controlsRepository: ControlsRepository
+
 
     override fun onCreate() {
+        dispatcher.onServicePreSuperOnCreate()
         super.onCreate()
 
         Timber.i("SoundService created")
         Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
 
-        setupPlayer()
-
         setupNotificationChannels(this)
-
         registerReceiver(mediaNotificationReceiver, MediaAction.filter())
 
+        createMediaSession()
+        sessionToken = mediaSession?.sessionToken
+
+        setupPlayer()
+    }
+
+
+    override fun onDestroy() {
+        dispatcher.onServicePreSuperOnDestroy()
+        super.onDestroy()
+
+        Timber.i("SoundService destroyed")
+
+        mediaSession?.isActive = false
+        mediaSession?.release()
+
+        playersMesh.release()
+
+        unregisterReceiver(mediaNotificationReceiver)
+    }
+
+
+    private fun createMediaSession() {
         mediaSession = MediaSession(baseContext, "SoundService session").apply {
             setPlaybackState(
                 PlaybackState.Builder()
@@ -61,28 +97,16 @@ class SoundService : MediaBrowserService() {
                 )
             )
         }
-
-        sessionToken = mediaSession?.sessionToken
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Timber.i("SoundService destroyed")
-
-        mediaSession?.isActive = false
-        mediaSession?.release()
-
-        // TODO: release the player
-        playersMesh.release()
-
-        unregisterReceiver(mediaNotificationReceiver)
     }
 
 
     private val mediaSessionCallbacks = object : MediaSession.Callback() {
         fun enterPlay(composition: CompositionData) {
+            if (!composition.isPlayable) {
+                Timber.w("Trying to EnterPlay with not playable composition")
+                return
+            }
+
             startService(Intent(this@SoundService, SoundService::class.java))
 
             mediaSession?.isActive = true
@@ -90,7 +114,8 @@ class SoundService : MediaBrowserService() {
             mediaSession?.setPlaybackState(Builders.playState.build())
             mediaSession?.setMetadata(Builders.metadata(this@SoundService, composition).build())
 
-            startForeground(ControlsNotificationBuilder.ID,
+            startForeground(
+                ControlsNotificationBuilder.ID,
                 ControlsNotificationBuilder(this@SoundService).build()
             )
             // TODO: consider register audio becoming noisy here
@@ -111,7 +136,8 @@ class SoundService : MediaBrowserService() {
 
             val composition = Json.decodeFromString<CompositionData>(mediaId ?: return)
 
-            playersMesh.updateComposition(composition)
+            updateCurrentComposition(composition)
+
             enterPlay(composition)
         }
 
@@ -137,13 +163,6 @@ class SoundService : MediaBrowserService() {
             mediaSession?.isActive = false
             stopForeground(true)
         }
-
-
-        override fun onCommand(command: String, args: Bundle?, cb: ResultReceiver?) {
-            when(command) {
-                COMMAND_MASTER_VOLUME -> args?.getFloat(null)?.let { playersMesh.masterVolume = it }
-            }
-        }
     }
 
 
@@ -153,23 +172,40 @@ class SoundService : MediaBrowserService() {
     private fun setupPlayer() {
         playersMesh = PlayersMesh(this)
 
-        LoopLoader.getAllLoops(this).forEach {
+        loopsRepository.staticLoops.forEach {
             Timber.d(it.id)
             playersMesh.addLoop(it)
         }
 
-//        val testComposition = CompositionData(loops = listOf(
-//            CompositionItem("test:brown_noise", 0.5f),
-//            CompositionItem("test:ambient_music", volume = 0.3f)
-//        ))
-//        playersMesh.updateComposition(testComposition)
+        loopsRepository.playableComposition.observe(owner = this) {
+            updateCurrentComposition(it)
+//            Timber.v("New composition to sound service: $it")
+        }
+
+        controlsRepository.masterVolume.observe(owner = this) {
+            updateMasterVolume(it)
+        }
+    }
+
+
+    private fun updateCurrentComposition(c: CompositionData?) {
+        playersMesh.updateComposition(c)
+
+        if (c == null || !c.isPlayable)
+            mediaSession!!.controller.transportControls.pause()
+    }
+
+
+    private fun updateMasterVolume(it: Float) {
+        Timber.v("Updated master volume: $it")
+        playersMesh.masterVolume = it
     }
 
 
     // ===============================================
     // ================= NOTIFICATIONS ===============
     // ===============================================
-    private val mediaNotificationReceiver = object: BroadcastReceiver() {
+    private val mediaNotificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             with(intent?.action ?: "null intent") { Timber.d("Received: $this") }
 
@@ -194,7 +230,14 @@ class SoundService : MediaBrowserService() {
 
     private fun updateForegroundNotification() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.notify(ControlsNotificationBuilder.ID, ControlsNotificationBuilder(this).build())
+
+        if (nm.activeNotifications.any { it.id == ControlsNotificationBuilder.ID })
+            nm.notify(
+                ControlsNotificationBuilder.ID,
+                ControlsNotificationBuilder(this).build()
+            )
+        else
+            Timber.w("Trying to update non existing foreground notification")
     }
 
 
@@ -221,7 +264,18 @@ class SoundService : MediaBrowserService() {
 
     override fun onBind(intent: Intent?): IBinder? {
         Timber.d("Bound to ?")
-
+        dispatcher.onServicePreSuperOnBind()
         return super.onBind(intent)
     }
+
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        dispatcher.onServicePreSuperOnStart()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+
+    private val dispatcher = ServiceLifecycleDispatcher(this)
+
+    override fun getLifecycle() = dispatcher.lifecycle
 }

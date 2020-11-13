@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="model_view"
+                type="com.jack.nars.waver.ui.bottombar.BottomBarModel" />
+
+        <variable
+                name="model_main"
+                type="com.jack.nars.waver.MainModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorOnSurface"
+            tools:context=".ui.bottombar.BottomBarFragment">
+
+        <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:alpha="0.3"
+                android:contentDescription="@string/desc_volume_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/volume_bar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/volume_bar"
+                app:srcCompat="@drawable/ic_volume_24"
+                app:tint="#000" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/play_pause"
+                style="@style/Widget.Waver.Button.IconOnly"
+                playIcon="@{model_main.isPlaying}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:enabled="@{model_view.hasPlayableComposition}"
+                app:iconSize="36dp"
+                app:iconTint="@color/play_button"
+                app:layout_constraintBottom_toBottomOf="@+id/volume_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/volume_bar"
+                tools:icon='@drawable/ic_play_24' />
+
+        <com.google.android.material.slider.Slider
+                android:id="@+id/volume_bar"
+                bindUnitaryValue="@={model_view.masterVolume}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="16dp"
+                android:valueFrom="0.0"
+                android:valueTo="1.0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/play_pause"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

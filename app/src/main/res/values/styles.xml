@@ -1,11 +1,75 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Base application theme -->
+    <style name="Theme.Waver" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+
+        <item name="android:fontFamily">@font/roboto</item>
+    </style>
+
+
+    <!-- Text Appearances -->
+    <style name="TextAppearance.Waver.CardTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#ddd</item>
+        <item name="android:textSize">21sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.BigTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#dadada</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.ModalTitle" parent="TextAppearance.Waver.BigTitle">
+        <item name="android:textColor">#9C9C9C</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.BackgroundBlend.Small" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#636363</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.BackgroundBlend.Big" parent="TextAppearance.Waver.BackgroundBlend.Small">
+        <item name="android:textSize">24sp</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+
+    <!-- Widgets -->
+    <style name="Widget.Waver.Button.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="rippleColor">#333</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
+
+    <style name="Widget.Waver.PopupMenu" parent="@style/Widget.MaterialComponents.PopupMenu">
+        <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <item name="android:textColor">@color/textPopup</item>
+        <item name="android:iconTint">@color/textPopup</item>
+    </style>
+
+    <style name="Widget.Waver.Chip.Loop" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="android:textColor">@color/textSurfaceTitle</item>
+        <item name="chipBackgroundColor">@color/colorOnSurface</item>
+        <item name="checkedIconTint">@color/textSurfaceTitle</item>
     </style>
 
 </resources>
+
+
+        <!--        <item name="android:popupMenuStyle">@style/Widget.Waver.PopupMenu</item>-->
+        <!--        <item name="popupMenuStyle">@style/Widget.Waver.PopupMenu</item>-->
+        <!--        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
+        <!--        <item name="android:popupMenu"-->

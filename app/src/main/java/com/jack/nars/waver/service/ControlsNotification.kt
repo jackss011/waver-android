@@ -107,7 +107,8 @@ class ControlsNotificationBuilder(val context: SoundService)
                 Notification.Action.Builder(
                     Icon.createWithResource(context, icon),
                     title,
-                    PendingIntent.getBroadcast(context,
+                    PendingIntent.getBroadcast(
+                        context,
                         0,
                         Intent(action).setPackage(context.packageName),
                         0
@@ -116,20 +117,27 @@ class ControlsNotificationBuilder(val context: SoundService)
             )
         }
 
+        val showVolume = context.showVolumeAction
+
         // notification buttons
-        addMediaAction("Volume down", R.drawable.ic_notification_down, MediaAction.DOWN)
+        if (showVolume)
+            addMediaAction("Volume down", R.drawable.ic_notification_down, MediaAction.DOWN)
+
         if (isPlaying)
             addMediaAction("Pause", R.drawable.ic_notification_pause, MediaAction.PAUSE)
         else
             addMediaAction("Play", R.drawable.ic_notification_play, MediaAction.PLAY)
-        addMediaAction("Volume up", R.drawable.ic_notification_up, MediaAction.UP)
+
+        if (showVolume)
+            addMediaAction("Volume up", R.drawable.ic_notification_up, MediaAction.UP)
+
         addMediaAction("Close", R.drawable.ic_notification_close, MediaAction.STOP)
 
         // Take advantage of MediaStyle features
         @Suppress("RemoveRedundantSpreadOperator")
         style = Notification.MediaStyle()
             .setMediaSession(context.mediaSession?.sessionToken)
-            .setShowActionsInCompactView(*intArrayOf(0, 1, 2))
+            .setShowActionsInCompactView(*(if (showVolume) intArrayOf(0, 1, 2) else intArrayOf(0)))
 
         Timber.d("MediaSession token to notification: %s".format(context.mediaSession?.sessionToken))
     }

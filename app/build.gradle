@@ -6,6 +6,9 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlinx-serialization'
 
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -30,40 +33,64 @@ android {
         }
     }
     buildFeatures {
-        viewBinding true
+        dataBinding true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 dependencies {
-    def lifecycle_version = "2.2.0"
-    def timber_version = "4.7.1"
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // AndroidX
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.media:media:1.2.0"
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+
+    // Material
+    implementation 'com.google.android.material:material:1.3.0-alpha03'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Lifecycle
+    def lifecycle_version = "2.2.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycle_version"
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
 
     // Serialization
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0'
 
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // viewModel()
+    def lifecycle_hilt_version = "1.0.0-alpha02"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$lifecycle_hilt_version"
+    kapt "androidx.hilt:hilt-compiler:$lifecycle_hilt_version"
+
     // Utils
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
