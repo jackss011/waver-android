@@ -1,12 +1,10 @@
  package com.jack.nars.waver.data
 
 import android.content.Context
-import android.os.storage.StorageVolume
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +19,8 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
     private val _activeComposition = MutableLiveData(CompositionData())
     val activeCompositionData: LiveData<CompositionData> get() = _activeComposition
 
+    private val compositionCache = CompositionCache()
+
 
     fun updateActiveComposition(composition: CompositionData) {
         _activeComposition.value = composition
@@ -34,14 +34,25 @@ class LoopRepository @Inject constructor(@ApplicationContext appContext: Context
 
     fun activateLoop(id: String) {
         val old = _activeComposition.value!!
-        val new = old.copy(loops = old.loops + CompositionItem(id))
+
+        if (old.loops.any { it.id == id }) return
+
+        val cached = compositionCache.retrieveLoop(id)
+        val toAdd = if (cached != null) CompositionItem(id, cached.volume) else CompositionItem(id)
+        val new = old.copy(loops = old.loops + toAdd)
+
         updateActiveComposition(new)
     }
 
 
     fun deactivateLoop(id: String) {
         val old = _activeComposition.value!!
-        val new = old.copy(loops = old.loops.filter { it.id != id })
+
+        val toRemoveList = old.loops.filter { it.id == id }.apply {
+            firstOrNull()?.let { compositionCache.saveLoop(it) }
+        }
+
+        val new = old.copy(loops = old.loops - toRemoveList)
         updateActiveComposition(new)
     }
 
