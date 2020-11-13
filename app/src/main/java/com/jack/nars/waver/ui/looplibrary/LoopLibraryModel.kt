@@ -3,11 +3,15 @@ package com.jack.nars.waver.ui.looplibrary
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import com.jack.nars.waver.data.ControlsRepository
 import com.jack.nars.waver.data.LoopRepository
+import com.jack.nars.waver.data.PlaybackRequest
 
 
-class LoopLibraryModel @ViewModelInject
-constructor(private val loopRepository: LoopRepository) : ViewModel() {
+class LoopLibraryModel @ViewModelInject constructor(
+    private val loopRepository: LoopRepository,
+    private val controlsRepository: ControlsRepository
+) : ViewModel() {
 
     val staticLoops = loopRepository.staticLoops
     val activeLoopIds = loopRepository.activeCompositionData
@@ -15,9 +19,11 @@ constructor(private val loopRepository: LoopRepository) : ViewModel() {
 
 
     fun onLoopClicked(id: String, checked: Boolean) {
-        if (checked)
+        if (checked) {
             loopRepository.activateLoop(id)
-        else
+            controlsRepository.sendPlaybackRequest(PlaybackRequest.PLAY)
+        } else {
             loopRepository.deactivateLoop(id)
+        }
     }
 }
