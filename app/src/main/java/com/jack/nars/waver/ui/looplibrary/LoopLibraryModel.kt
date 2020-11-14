@@ -3,9 +3,9 @@ package com.jack.nars.waver.ui.looplibrary
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.jack.nars.waver.data.ControlsRepository
-import com.jack.nars.waver.data.LoopRepository
-import com.jack.nars.waver.data.PlaybackRequest
+import com.jack.nars.waver.data.repos.ControlsRepository
+import com.jack.nars.waver.data.repos.LoopRepository
+import com.jack.nars.waver.data.repos.PlaybackRequest
 
 
 class LoopLibraryModel @ViewModelInject constructor(

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.CompositionItem
-import com.jack.nars.waver.data.LoopRepository
+import com.jack.nars.waver.data.repos.LoopRepository
 import timber.log.Timber
 import java.lang.IllegalStateException
 

@@ -1,11 +1,9 @@
 package com.jack.nars.waver.ui.activecomposition
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.jack.nars.waver.data.LoopRepository
+import com.jack.nars.waver.data.repos.LoopRepository
 
 
 data class LoopDisplayInfo(val id: String, val title: String, val intensity: Float = .5f)

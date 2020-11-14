@@ -1,9 +1,10 @@
- package com.jack.nars.waver.data
+ package com.jack.nars.waver.data.repos
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.jack.nars.waver.data.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

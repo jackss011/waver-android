@@ -14,20 +14,16 @@ import android.media.session.PlaybackState
 import android.app.PendingIntent
 import android.content.*
 import android.os.IBinder
-import android.os.ResultReceiver
-import android.view.Display
 import androidx.lifecycle.*
-import androidx.lifecycle.Observer
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.data.CompositionData
-import com.jack.nars.waver.data.ControlsRepository
-import com.jack.nars.waver.data.LoopRepository
+import com.jack.nars.waver.data.repos.ControlsRepository
+import com.jack.nars.waver.data.repos.LoopRepository
 import com.jack.nars.waver.players.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 

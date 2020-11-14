@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.service.SoundService
-import com.jack.nars.waver.data.PlaybackRequest
+import com.jack.nars.waver.data.repos.PlaybackRequest
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
