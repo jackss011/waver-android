@@ -1,6 +1,8 @@
 package com.jack.nars.waver.players
 
 import android.content.Context
+import android.media.MediaPlayer
+import android.net.Uri
 import android.util.Log
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.Loop
@@ -32,7 +34,9 @@ class PlayersMesh(val context: Context) {
         loops[loop.id] = loop
         players[loop.id] = player
 
-        player.prepare(loop.source)
+        player.prepare { context: Context, mp: MediaPlayer ->
+            mp.setDataSource(context, Uri.parse(loop.uri))
+        }
     }
 
 

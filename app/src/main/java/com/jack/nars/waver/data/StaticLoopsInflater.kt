@@ -1,16 +1,16 @@
 package com.jack.nars.waver.data
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.XmlResourceParser
-import android.util.TimingLogger
 import com.jack.nars.waver.BuildConfig
 import com.jack.nars.waver.R
 import org.xmlpull.v1.XmlPullParser
-import timber.log.Timber
+import java.io.File
 
 
 object StaticLoopsInflater {
-    private fun parseSource(parser: XmlResourceParser): Loop.Source {
+    private fun parseSource(context: Context, parser: XmlResourceParser): String {
         var id: Int? = null
 
         for (i in 0 until parser.attributeCount)
@@ -22,17 +22,19 @@ object StaticLoopsInflater {
             error("Assertion failed")
         }
 
-        return Loop.Res(id!!)
+        return ContentResolver.SCHEME_ANDROID_RESOURCE +
+                File.pathSeparator + File.separator + File.separator +
+                context.packageName + File.separator + id
     }
 
 
-    private fun parseLoop(parser: XmlResourceParser): Loop {
+    private fun parseLoop(context: Context, parser: XmlResourceParser): Loop {
         var id: String? = null
         var title: String? = null
-        var source: Loop.Source? = null
+        var uri: String? = null
 
-        for(i in 0 until parser.attributeCount)
-            when(parser.getAttributeName(i)) {
+        for (i in 0 until parser.attributeCount)
+            when (parser.getAttributeName(i)) {
                 "id" -> id = parser.getAttributeValue(i)
                 "title" -> title = parser.getAttributeValue(i)
             }
@@ -41,23 +43,23 @@ object StaticLoopsInflater {
             if(parser.eventType == XmlPullParser.START_TAG) {
                 when(parser.name) {
                     "source" -> {
-                        source = parseSource(parser)
+                        uri = parseSource(context, parser)
                     }
                 }
             }
         }
 
-        return Loop(id!!, title!!, Loop.Mode.CROSSFADE, source!!)
+        return Loop(id = id!!, title = title!!, uri = uri!!, type = Loop.Type.STATIC)
     }
 
 
-    private fun parseLoops(parser: XmlResourceParser): Iterable<Loop> {
+    private fun parseLoops(context: Context, parser: XmlResourceParser): Iterable<Loop> {
         return mutableListOf<Loop>().apply {
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
                 if (parser.eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
                         "loop" ->
-                            add(parseLoop(parser))
+                            add(parseLoop(context, parser))
                     }
                 }
             }
@@ -71,6 +73,6 @@ object StaticLoopsInflater {
 //        Timber.d("inflation time: ${(System.nanoTime() - s) / 1e6f}ms")
 //        return res
 
-        return parseLoops(context.resources.getXml(R.xml.loops))
+        return parseLoops(context, context.resources.getXml(R.xml.loops))
     }
 }

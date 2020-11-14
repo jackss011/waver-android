@@ -5,7 +5,7 @@ import android.media.MediaPlayer
 
 
 abstract class BasePlayer(val context: Context) {
-    interface SourceProvider {
+    fun interface SourceProvider {
         fun setAsDataSource(context: Context, mp: MediaPlayer)
     }
 
