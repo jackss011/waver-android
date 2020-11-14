@@ -6,12 +6,8 @@
     <data>
 
         <variable
-                name="model_view"
+                name="bound_model"
                 type="com.jack.nars.waver.ui.bottombar.BottomBarModel" />
-
-        <variable
-                name="model_main"
-                type="com.jack.nars.waver.MainModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,11 +32,11 @@
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/play_pause"
                 style="@style/Widget.Waver.Button.IconOnly"
-                playIcon="@{model_main.isPlaying}"
+                playIcon="@{bound_model.isPlaying}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:enabled="@{model_view.hasPlayableComposition}"
+                android:enabled="@{bound_model.hasPlayableComposition}"
                 app:iconSize="36dp"
                 app:iconTint="@color/play_button"
                 app:layout_constraintBottom_toBottomOf="@+id/volume_bar"
@@ -50,7 +46,7 @@
 
         <com.google.android.material.slider.Slider
                 android:id="@+id/volume_bar"
-                bindUnitaryValue="@={model_view.masterVolume}"
+                bindUnitaryValue="@={bound_model.masterVolume}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"

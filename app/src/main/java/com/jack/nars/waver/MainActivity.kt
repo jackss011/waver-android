@@ -103,6 +103,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun onStateUpdate(state: PlaybackState?) {
-        viewModel.onPlaybackUpdate(state)
+        viewModel.onPbStateUpdate(state)
     }
 }
