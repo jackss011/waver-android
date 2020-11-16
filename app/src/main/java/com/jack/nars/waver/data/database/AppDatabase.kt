@@ -5,23 +5,13 @@ import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Entity
-data class Test(@PrimaryKey val id: Int)
-
-
-@Dao
-interface TestDao {
-    @Query("SELECT * FROM Test")
-    fun getAll(): List<Test>
-
-    @Insert
-    fun insert(channel: Test)
-}
-
-
-@Database(entities = [Test::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Profile::class, LoopInProfile::class],
+    version = 1,
+    exportSchema = false,
+)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun getTestDao(): TestDao
+    abstract fun getProfileDao(): ProfileDao
 
 
     // ======== GET INSTANCE ==========
