@@ -3,9 +3,11 @@ package com.jack.nars.waver.data
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.XmlResourceParser
+import android.util.Xml
 import com.jack.nars.waver.BuildConfig
 import com.jack.nars.waver.R
 import org.xmlpull.v1.XmlPullParser
+import timber.log.Timber
 import java.io.File
 
 
@@ -72,7 +74,37 @@ object StaticLoopsInflater {
 //        val res =  parseLoops(context.resources.getXml(R.xml.loops))
 //        Timber.d("inflation time: ${(System.nanoTime() - s) / 1e6f}ms")
 //        return res
+//        val ps = StaticLoopParser(context, context.resources.getXml(R.xml.loops))
+//        Timber.d("PARSER_TEST = ${ps.run()} \n vs \n ${parseLoops(context, context.resources.getXml(R.xml.loops))}")
 
         return parseLoops(context, context.resources.getXml(R.xml.loops))
     }
 }
+
+
+//class StaticLoopParser(context: Context, parser: XmlPullParser) : Parser(context, parser) {
+//    private fun pLoop(args: Map<String, String>): Loop {
+//        var uri = ""
+//
+//        parse("source" to { uri = pSource(it)})
+//
+//        return Loop(
+//            id = args["id"] ?: error(""),
+//            title = args["title"] ?: error(""),
+//            type = Loop.Type.STATIC,
+//            uri = uri,
+//        )
+//    }
+//
+//    private fun pSource(args: Map<String, String>): String {
+//        return ContentResolver.SCHEME_ANDROID_RESOURCE +
+//                File.pathSeparator + File.separator + File.separator +
+//                context.packageName + File.separator + args["id"]
+//    }
+//
+//    fun run(): Iterable<Loop> {
+//        return mutableListOf<Loop>().apply {
+//            parse("loop" to { add(pLoop(it)) })
+//        }
+//    }
+//}
