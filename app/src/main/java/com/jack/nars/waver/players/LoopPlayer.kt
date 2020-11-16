@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AndroidRuntimeException
 import timber.log.Timber
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 
@@ -15,19 +16,11 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
     private val blendMargin = 2000
     private val monitorInterval = 300
 
-    private val rampUpDuration = 200
-    private val rampDownDuration = 200
-
 
     private val blendEnter = VolumeShaper.Configuration.Builder()
         .setCurve(
-            floatArrayOf(0f, 0.1f, 0.3f, 0.5f, 1f), floatArrayOf(
-                0f,
-                0.316f,
-                0.546f,
-                0.7f,
-                1f
-            )
+            floatArrayOf(0f, 0.1f, 0.3f, 0.5f, 1f),
+            floatArrayOf(0f, 0.316f, 0.546f, 0.7f, 1f)
         )
         .setInterpolatorType(VolumeShaper.Configuration.INTERPOLATOR_TYPE_LINEAR)
         .setDuration(blendDuration.toLong())
@@ -35,24 +28,22 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
     private val blendExit = VolumeShaper.Configuration.Builder(blendEnter.build())
         .reflectTimes()
 
-    private val rampUp = VolumeShaper.Configuration.Builder(VolumeShaper.Configuration.LINEAR_RAMP)
-        .setDuration(rampUpDuration.toLong())
-
-    private val rampDown = VolumeShaper.Configuration.Builder(rampUp.build())
-        .reflectTimes()
-        .setDuration(rampDownDuration.toLong())
-
 
     private var playerA: MediaPlayer = MediaPlayer()
     private var playerB: MediaPlayer = MediaPlayer()
-    private var blendShaperA: VolumeShaper? = null
-    private var blendShaperB: VolumeShaper? = null
 
     private var activePlayer = playerA
     private val inactivePlayer get() = if (activePlayer === playerA) playerB else playerA
 
+
+    private var blendShaperA: VolumeShaper? = null
+    private var blendShaperB: VolumeShaper? = null
+
     private val activeBlendShaper get() = if (activePlayer === playerA) blendShaperA else blendShaperB
     private val inactiveBlendShaper get() = if (activePlayer === playerA) blendShaperB else blendShaperA
+
+    private var shaperStart = false
+
 
     private val shouldTransition
         get() =
@@ -83,7 +74,6 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
         volumeRamp.start()
     }
 
-    private var shaperStart = false
 
     private val monitor = Monitor(monitorInterval) {
         if (shaperStart) {
@@ -100,11 +90,6 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
             activeBlendShaper?.replace(blendExit.build(), VolumeShaper.Operation.REVERSE, false)
             inactiveBlendShaper?.replace(blendEnter.build(), VolumeShaper.Operation.REVERSE, false)
 
-//            activeBlendShaper?.close()
-//            inactiveBlendShaper?.close()
-//            activeBlendShaper = activePlayer.createVolumeShaper(blendExit.build())
-//            inactiveBlendShaper = inactivePlayer.createVolumeShaper(blendEnter.build())
-
             inactivePlayer.start()
             activePlayer = inactivePlayer
             shaperStart = true
@@ -113,6 +98,8 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
 
 
     override fun play() {
+        Timber.i("Rising")
+
         volumeRamp.raise()
 
         activePlayer.start()
@@ -171,7 +158,7 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
 
 
     private val volumeRamp = AnimatedRamp(object : AnimatedRamp.Listener {
-        override fun onRiseCompleted() {}
+        override fun onRiseCompleted() = Timber.d("Rise completed")
         override fun onFallCompleted() = enteredPause()
         override fun onUpdate(v: Float) = setPlayersVolume(v)
     })
@@ -180,28 +167,42 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
     // ==================================
     // =========== HELPERS ==============
     // ==================================
-    private open class Monitor(val interval: Int, val r: Runnable) {
+    private open class Monitor(var interval: Int, var runnable: Runnable?) {
         private val handler = Handler(
             Looper.myLooper()
                 ?: throw AndroidRuntimeException("Animators may only be run on Looper threads")
         )
 
         private fun tick() {
-            r.run()
+            runnable?.run()
             handler.postDelayed(posted, interval.toLong())
         }
 
         private val posted = { tick() }
 
-        open fun start() = handler.post(posted)
-        open fun stop() = handler.removeCallbacks(posted)
+        private var isStarted = false
+
+        fun start() {
+            if (isStarted) return
+
+            isStarted = true
+            handler.post(posted)
+        }
+
+        fun stop() {
+            isStarted = false
+            handler.removeCallbacks(posted)
+        }
     }
 
 
-    private class AnimatedRamp(val listener: Listener) {
-        val frameTime = 1f / 60f
+    private class AnimatedRamp(val listener: Listener, var frameTime: Float = 1f / 60f) :
+        Monitor((frameTime * 1000).roundToInt(), null) {
         var travelTime = 0.2f
 
+        init {
+            runnable = Runnable { update() }
+        }
 
         interface Listener {
             fun onRiseCompleted()
@@ -252,34 +253,6 @@ class LoopPlayer(context: Context) : BasePlayer(context) {
 
         private fun notifyUpdate() {
             listener.onUpdate(animPosition * target)
-        }
-
-
-        // ======== PARENT =========
-        private var isStarted = false
-
-        fun start() {
-            if (isStarted) return
-
-            isStarted = true
-            handler.post(posted)
-        }
-
-        fun stop() {
-            isStarted = false
-            handler.removeCallbacks(posted)
-        }
-
-        private val handler = Handler(
-            Looper.myLooper()
-                ?: throw AndroidRuntimeException("Animators may only be run on Looper threads")
-        )
-
-        private val posted = { tick() }
-
-        private fun tick() {
-            update()
-            handler.postDelayed(posted, (frameTime * 1000).roundToLong())
         }
     }
 }
