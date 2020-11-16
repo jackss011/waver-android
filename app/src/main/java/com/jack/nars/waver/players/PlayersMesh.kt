@@ -9,9 +9,6 @@ import com.jack.nars.waver.data.Loop
 
 
 class PlayersMesh(val context: Context) {
-    val TAG = "PlayersMesh"
-
-
     private val loops = mutableMapOf<String, Loop>()
     private val players = mutableMapOf<String, BasePlayer>()
 
@@ -29,7 +26,7 @@ class PlayersMesh(val context: Context) {
 //            Loop.Mode.CROSSFADE -> CrossfadeLoopPlayer(context)
 //            Loop.Mode.SEAMLESS -> SeamlessLoopPlayer(context)
 //        }
-        val player = CrossfadeLoopPlayer(context)
+        val player = LoopPlayer(context)
 
         loops[loop.id] = loop
         players[loop.id] = player
@@ -43,7 +40,6 @@ class PlayersMesh(val context: Context) {
     fun play() {
         (composition ?: return).loops.map { it.id }.forEach {
             players[it]?.play()
-            Log.d(TAG, "Playing 1")
         }
         isPlaying = true
     }
@@ -66,11 +62,11 @@ class PlayersMesh(val context: Context) {
     fun updateComposition(new: CompositionData?) {
 //        new.loops.forEach { if(it.id !in players.keys) Log.e("MeshPlayer", "Missing loop")}
 
-        Log.d(TAG, "Composition:")
-        new?.loops?.forEach { Log.i(TAG, it.id) }
-
-        Log.d(TAG, "Players:")
-        players.keys.forEach { Log.i(TAG, it) }
+//        Log.d(TAG, "Composition:")
+//        new?.loops?.forEach { Log.i(TAG, it.id) }
+//
+//        Log.d(TAG, "Players:")
+//        players.keys.forEach { Log.i(TAG, it) }
 
 
         // copy old list
