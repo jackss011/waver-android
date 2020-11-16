@@ -3,53 +3,63 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.drawerlayout.widget.DrawerLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-            <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/library"
-                    android:name="com.jack.nars.waver.ui.looplibrary.LoopLibraryFragment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:layout_height="150dp" />
-
-            <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/list"
-                    android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:layout="@layout/fragment_composition"
-                    tools:layout_height="150dp">
-
-            </androidx.fragment.app.FragmentContainerView>
-
-            <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/bottom_bar"
-                    android:name="com.jack.nars.waver.ui.bottombar.BottomBarFragment"
+            <!-- Main Screen -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:layout="@layout/fragment_bottom_bar"
-                    tools:layout_height="150dp" />
+                    android:layout_height="match_parent">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/library"
+                        android:name="com.jack.nars.waver.ui.looplibrary.LoopLibraryFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:layout_height="150dp" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/list"
+                        android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout="@layout/fragment_composition"
+                        tools:layout_height="150dp">
 
+                </androidx.fragment.app.FragmentContainerView>
+
+                <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/bottom_bar"
+                        android:name="com.jack.nars.waver.ui.bottombar.BottomBarFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:layout="@layout/fragment_bottom_bar"
+                        tools:layout_height="150dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <!-- Drawer-->
+        <include
+                layout="@layout/include_drawer"
+                android:id="@+id/navigation_drawer" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

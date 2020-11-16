@@ -5,6 +5,7 @@
     <color name="colorAccent">#008577</color>
     <color name="colorBackground">#2C2C2C</color>
     <color name="colorOnSurface">#3F3F3F</color>
+    <color name="backgroundDrawer">@color/colorBackground</color>
     <color name="textPopup">#aaa</color>
     <color name="textBackgroundBlend">#636363</color>
     <color name="textSurfaceTitle">#ccc</color>
