@@ -17,22 +17,28 @@
                     android:layout_height="match_parent">
 
 
+                <!-- Navigation -->
                 <androidx.fragment.app.FragmentContainerView
-                        android:id="@+id/composition"
-                        android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
+                        android:id="@+id/frag_nav_host"
+                        android:name="androidx.navigation.fragment.NavHostFragment"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
+                        android:layout_marginBottom="8dp"
+                        app:defaultNavHost="true"
+                        app:layout_constraintBottom_toTopOf="@+id/frag_bottom_bar"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
+
                         app:layout_constraintTop_toTopOf="parent"
+                        app:navGraph="@navigation/nav_graph"
                         tools:layout="@layout/fragment_composition">
 
                 </androidx.fragment.app.FragmentContainerView>
 
+                <!-- Bottom Bar -->
                 <androidx.fragment.app.FragmentContainerView
-                        android:id="@+id/bottom_bar"
+                        android:id="@+id/frag_bottom_bar"
                         android:name="com.jack.nars.waver.ui.bottombar.BottomBarFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
