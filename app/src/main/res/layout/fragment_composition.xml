@@ -61,6 +61,16 @@
                 tools:listitem="@layout/item_active_loop">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/library"
+                android:name="com.jack.nars.waver.ui.looplibrary.LoopLibraryFragment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_height="150dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

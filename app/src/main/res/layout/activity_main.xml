@@ -16,28 +16,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                <androidx.fragment.app.FragmentContainerView
-                        android:id="@+id/library"
-                        android:name="com.jack.nars.waver.ui.looplibrary.LoopLibraryFragment"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:layout_height="150dp" />
 
                 <androidx.fragment.app.FragmentContainerView
-                        android:id="@+id/list"
+                        android:id="@+id/composition"
                         android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        tools:layout="@layout/fragment_composition"
-                        tools:layout_height="150dp">
+                        tools:layout="@layout/fragment_composition">
 
                 </androidx.fragment.app.FragmentContainerView>
 
@@ -52,6 +42,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         tools:layout="@layout/fragment_bottom_bar"
                         tools:layout_height="150dp" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
