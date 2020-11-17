@@ -274,4 +274,21 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
     private val dispatcher = ServiceLifecycleDispatcher(this)
 
     override fun getLifecycle() = dispatcher.lifecycle
+
+
+    // ======= COMPANION =========
+    companion object {
+        fun createMediaBrowser(
+            context: Context,
+            mediaBrowserCallbacks: MediaBrowser.ConnectionCallback
+        ): MediaBrowser {
+
+            return MediaBrowser(
+                context,
+                ComponentName(context, SoundService::class.java),
+                mediaBrowserCallbacks,
+                null
+            )
+        }
+    }
 }
