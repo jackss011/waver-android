@@ -1,13 +1,12 @@
-package com.jack.nars.waver.data
+package com.jack.nars.waver.data.storage
 
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.XmlResourceParser
-import android.util.Xml
 import com.jack.nars.waver.BuildConfig
 import com.jack.nars.waver.R
+import com.jack.nars.waver.data.Loop
 import org.xmlpull.v1.XmlPullParser
-import timber.log.Timber
 import java.io.File
 
 

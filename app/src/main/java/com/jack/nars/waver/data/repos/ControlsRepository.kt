@@ -2,7 +2,7 @@ package com.jack.nars.waver.data.repos
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.jack.nars.waver.data.LastStateStorage
+import com.jack.nars.waver.data.storage.LastStateStorage
 import javax.inject.Inject
 import javax.inject.Singleton
 

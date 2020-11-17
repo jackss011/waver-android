@@ -1,6 +1,7 @@
-package com.jack.nars.waver.data
+package com.jack.nars.waver.data.storage
 
 import android.content.Context
+import com.jack.nars.waver.data.CompositionData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString

@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.jack.nars.waver.data.*
+import com.jack.nars.waver.data.storage.CompositionCache
+import com.jack.nars.waver.data.storage.LastStateStorage
+import com.jack.nars.waver.data.storage.StaticLoopsInflater
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

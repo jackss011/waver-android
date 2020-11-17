@@ -1,4 +1,6 @@
-package com.jack.nars.waver.data
+package com.jack.nars.waver.data.storage
+
+import com.jack.nars.waver.data.CompositionItem
 
 class CompositionCache {
     private val map = mutableMapOf<String, CompositionItem>()
