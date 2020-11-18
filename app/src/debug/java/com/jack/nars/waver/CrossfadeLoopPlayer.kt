@@ -1,10 +1,11 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver
 
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.VolumeShaper
 import android.os.Handler
 import android.os.Looper
+import com.jack.nars.waver.players.BasePlayer
 import timber.log.Timber
 
 

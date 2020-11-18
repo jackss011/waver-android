@@ -1,8 +1,9 @@
-package com.jack.nars.waver.players
+package com.jack.nars.waver
 
 import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
+import com.jack.nars.waver.players.BasePlayer
 
 
 class SeamlessLoopPlayer(context: Context) : BasePlayer(context) {
