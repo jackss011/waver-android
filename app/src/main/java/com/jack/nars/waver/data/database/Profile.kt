@@ -16,7 +16,7 @@ data class Profile(
 
 @Entity(primaryKeys = ["idProfile", "idLoop"])
 data class LoopInProfile(
-    val idProfile: Long,
+    val idProfile: Long = 0,
     val idLoop: String,
     val intensity: Float,
 )

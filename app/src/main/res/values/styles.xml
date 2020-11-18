@@ -41,6 +41,16 @@
         <item name="textAllCaps">true</item>
     </style>
 
+    <style name="TextAppearance.Waver.ListTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#ddd</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.ListTitle.Small" parent="TextAppearance.Waver.ListTitle">
+        <item name="android:textColor">#aaa</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 
     <!-- Widgets -->
     <style name="Widget.Waver.Button.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">

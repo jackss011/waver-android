@@ -19,8 +19,8 @@ class DatabaseModule {
         return AppDatabase.getInstance(context)
     }
 
-//    @Provides
-//    fun providePlantDao(appDatabase: AppDatabase): PlantDao {
-//        return appDatabase.plantDao()
-//    }
+    @Provides
+    fun provideProfileDao(appDatabase: AppDatabase): ProfileDao {
+        return appDatabase.getProfileDao()
+    }
 }

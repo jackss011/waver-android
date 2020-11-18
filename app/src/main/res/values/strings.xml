@@ -7,4 +7,9 @@
     <string name="hint_no_loops_small">Add a loop from the library</string>
     <string name="title_loop_library">Loop Library</string>
     <string name="desc_volume_icon">Volume icon</string>
+    <string name="hint_profile_name">Name</string>
+    <string name="btn_create_profile">Create</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_save_profile">Save As Profile</string>
+    <string name="desc_profile_img">Profile image</string>
 </resources>

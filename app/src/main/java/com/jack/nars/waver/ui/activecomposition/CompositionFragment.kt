@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentCompositionBinding
@@ -18,6 +19,7 @@ import timber.log.Timber
 class CompositionFragment : Fragment() {
     private val model: CompositionModel by viewModels()
     private lateinit var binding: FragmentCompositionBinding
+    private val navController by lazy { findNavController() }
 
     private lateinit var loopAdapter: ActiveLoopAdapter
 
@@ -37,6 +39,10 @@ class CompositionFragment : Fragment() {
                 adapter = loopAdapter
                 layoutManager = LinearLayoutManager(requireActivity())
                 addItemDecoration(SpacingBetween(resources.getDimensionPixelSize(R.dimen.list_spacing)))
+            }
+
+            btnSave.setOnClickListener {
+                navController.navigate(CompositionFragmentDirections.actionMainToNewProfile())
             }
         }
 

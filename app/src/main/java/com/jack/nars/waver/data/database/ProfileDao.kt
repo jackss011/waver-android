@@ -8,9 +8,11 @@ import androidx.room.*
 abstract class ProfileDao {
     @Transaction
     open suspend fun createOrUpdateProfile(pwi: ProfileWithItems) {
-        deleteLoopsInProfileFor(pwi.profile.idProfile)
-        insertLoopsInProfile(pwi.loops)
-        insertProfile(pwi.profile)
+        if (pwi.profile.idProfile != 0L)
+            deleteLoopsInProfileFor(pwi.profile.idProfile)
+
+        val newProfileId = insertProfile(pwi.profile)
+        insertLoopsInProfile(pwi.loops.map { it.copy(idProfile = newProfileId) })
     }
 
     @Transaction
@@ -25,7 +27,7 @@ abstract class ProfileDao {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    protected abstract suspend fun insertProfile(profile: Profile)
+    protected abstract suspend fun insertProfile(profile: Profile): Long
 
     @Query("DELETE FROM Profile WHERE :idProfile = idProfile")
     protected abstract suspend fun deleteProfileWithId(idProfile: Long)

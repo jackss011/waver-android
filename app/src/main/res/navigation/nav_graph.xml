@@ -4,6 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/nav_graph"
         app:startDestination="@id/dest_main">
+
     <fragment
             android:id="@+id/dest_main"
             android:name="com.jack.nars.waver.ui.activecomposition.CompositionFragment"
@@ -13,11 +14,18 @@
                 android:id="@+id/action_main_to_profiles"
                 app:destination="@id/dest_profiles" />
         <action
-                android:id="@+id/action_main_to_new_profile"
-                app:destination="@id/dest_new_profile" />
+                android:id="@+id/action_main_to_create_profile"
+                app:destination="@id/dest_create_profile" />
     </fragment>
+
     <fragment
             android:id="@+id/dest_profiles"
             android:label="Profiles" />
-    <fragment android:id="@+id/dest_new_profile" />
+
+    <fragment
+            android:id="@+id/dest_create_profile"
+            android:label="New Profile"
+            android:name="com.jack.nars.waver.ui.profileeditor.ProfileEditorFragment"
+            tools:layout="@layout/fragment_profile_editor" />
+
 </navigation>
