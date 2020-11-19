@@ -6,6 +6,7 @@ import android.media.session.MediaController
 import android.media.session.PlaybackState
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.findFragmentById(R.id.frag_nav_host) as NavHostFragment
     }
 
+    private val drawerLayout get() = binding.drawerLayout
+
     @Suppress("MemberVisibilityCanBePrivate")
     val navController by lazy { navHost.navController }
 
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         mediaBrowser = SoundService.createMediaBrowser(this, mediaBrowserCallbacks)
         viewModel.playbackRequest.observe(this) { onPlaybackRequest(it) }
 
-        navController.addOnDestinationChangedListener(this.navigationChangeListener)
+        setupNavigation()
 
         Timber.d("ID: ${android.os.Process.myPid()}: ${android.os.Process.myTid()}")
     }
@@ -67,6 +70,16 @@ class MainActivity : AppCompatActivity() {
     //===========================================
 
     @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    private fun setupNavigation() {
+        navController.addOnDestinationChangedListener(this.navigationChangeListener)
+
+        findViewById<Button>(R.id.navBtnProfiles).setOnClickListener {
+            navController.navigate(NavGraphDirections.actionGlobalToProfiles())
+            drawerLayout.closeDrawers()
+        }
+    }
+
+
     private val navigationChangeListener =
         NavController.OnDestinationChangedListener { _, destination, arguments ->
             // TODO: implement

@@ -11,21 +11,24 @@
             android:label="Composition"
             tools:layout="@layout/fragment_composition">
         <action
-                android:id="@+id/action_main_to_profiles"
-                app:destination="@id/dest_profiles" />
-        <action
                 android:id="@+id/action_main_to_create_profile"
                 app:destination="@id/dest_create_profile" />
     </fragment>
 
     <fragment
             android:id="@+id/dest_profiles"
-            android:label="Profiles" />
+            android:name="com.jack.nars.waver.ui.profilelist.ProfileListFragment"
+            android:label="Profiles"
+            tools:layout="@layout/fragment_profile_list" />
 
     <fragment
             android:id="@+id/dest_create_profile"
             android:label="New Profile"
             android:name="com.jack.nars.waver.ui.profileeditor.ProfileEditorFragment"
             tools:layout="@layout/fragment_profile_editor" />
+
+    <action
+            android:id="@+id/action_global_to_profiles"
+            app:destination="@id/dest_profiles" />
 
 </navigation>

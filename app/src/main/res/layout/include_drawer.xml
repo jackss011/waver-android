@@ -1,18 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:colorBackground="#aaa"
+        android:id="@+id/linearLayout"
         android:layout_width="256dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/backgroundDrawer"
+        android:clickable="true"
         android:fitsSystemWindows="false"
-        android:clickable="true">
+        tools:colorBackground="#aaa">
 
     <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
             android:text="@string/app_name"
-            android:layout_margin="16dp"
-            android:textAppearance="@style/TextAppearance.Waver.BigTitle" />
-</LinearLayout>
+            android:textAppearance="@style/TextAppearance.Waver.ModalTitle"
+            android:textColor="@color/textSurfaceTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+            android:id="@+id/navBtnProfiles"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="100dp"
+            android:text="Profiles"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#aaa"
+            app:layout_constraintStart_toEndOf="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/navBtnProfiles"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/navBtnProfiles"
+            app:srcCompat="@drawable/ic_profile_list_24"
+            app:tint="#aaa" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
