@@ -37,7 +37,10 @@ constructor(
     private val loadedComposition = MutableLiveData<CompositionData?>()
 
     fun loadCurrentComposition() {
-        loadedComposition.value = loopRepo.activeCompositionData.value
+        val loading = loopRepo.activeCompositionData.value
+
+        if (loading?.isPlayable != true) throw IllegalStateException("Loaded unplayable composition")
+        loadedComposition.value = loading
     }
 
 

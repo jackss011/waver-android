@@ -1,9 +1,7 @@
 package com.jack.nars.waver.data.database
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 
 
 @Entity
@@ -14,7 +12,18 @@ data class Profile(
 )
 
 
-@Entity(primaryKeys = ["idProfile", "idLoop"])
+@Entity(
+    primaryKeys = ["idProfile", "idLoop"],
+    foreignKeys = [
+        ForeignKey(
+            entity = Profile::class,
+            parentColumns = ["idProfile"],
+            childColumns = ["idProfile"],
+            onDelete = CASCADE,
+            onUpdate = CASCADE,
+        ),
+    ],
+)
 data class LoopInProfile(
     val idProfile: Long = 0,
     val idLoop: String,

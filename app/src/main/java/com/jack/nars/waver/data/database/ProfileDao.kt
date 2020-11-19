@@ -2,12 +2,15 @@ package com.jack.nars.waver.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import timber.log.Timber
 
 
 @Dao
 abstract class ProfileDao {
     @Transaction
     open suspend fun createOrUpdateProfile(pwi: ProfileWithItems) {
+        Timber.i("Inserting profile: $pwi")
+
         if (pwi.profile.idProfile != 0L)
             deleteLoopsInProfileFor(pwi.profile.idProfile)
 
@@ -15,11 +18,13 @@ abstract class ProfileDao {
         insertLoopsInProfile(pwi.loops.map { it.copy(idProfile = newProfileId) })
     }
 
+
     @Transaction
     open suspend fun deleteProfile(idProfile: Long) {
         deleteLoopsInProfileFor(idProfile)
         deleteProfileWithId(idProfile)
     }
+
 
     @Transaction
     @Query("SELECT * from Profile")
