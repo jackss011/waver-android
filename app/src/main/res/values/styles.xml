@@ -8,6 +8,7 @@
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorSurface">@color/colorOnSurface</item>
         <item name="colorOnSurface">#f7f7f7</item>
+        <item name="android:textColorPrimary">@color/textPrimary</item>
     </style>
 
     <style name="Theme.Waver.OLED" parent="Theme.Waver">
@@ -98,6 +99,7 @@
         <item name="android:textAppearance">@style/TextAppearance.Waver.Chip</item>
     </style>
 
+    <color name="textPrimary">#f0f0f0</color>
 </resources>
 
 
