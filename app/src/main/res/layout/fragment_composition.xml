@@ -42,8 +42,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/title_composition"
-                android:textAppearance="@style/TextAppearance.Waver.BigTitle"
+                android:text="@string/head_loops"
+                android:textAppearance="@style/TextAppearance.Waver.ModalTitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,7 +80,8 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/btn_save_profile"
                 app:layout_constraintBottom_toTopOf="@+id/library"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

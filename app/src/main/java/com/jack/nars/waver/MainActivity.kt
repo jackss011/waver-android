@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.service.SoundService
 import com.jack.nars.waver.data.repos.PlaybackRequest
@@ -44,9 +45,11 @@ class MainActivity : AppCompatActivity() {
         binding.run {
             lifecycleOwner = this@MainActivity
 
-            topAppBar.setNavigationOnClickListener {
-                drawerLayout.openDrawer(GravityCompat.START)
-            }
+//            topAppBar.setNavigationOnClickListener {
+//                drawerLayout.openDrawer(GravityCompat.START)
+//            }
+
+            topAppBar.setupWithNavController(navController, drawerLayout)
         }
 
         mediaBrowser = SoundService.createMediaBrowser(this, mediaBrowserCallbacks)
@@ -89,7 +92,9 @@ class MainActivity : AppCompatActivity() {
 
     private val navigationChangeListener =
         NavController.OnDestinationChangedListener { _, destination, arguments ->
-            // TODO: implement
+            when (destination) {
+
+            }
         }
 
 
