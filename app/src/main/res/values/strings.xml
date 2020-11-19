@@ -19,4 +19,6 @@
     <string name="profile_delete_title">Delete <b>%1$s</b></string>
     <string name="snack_profile_deleted">Deleted profile</string>
     <string name="snack_profile_loaded">Profile loaded</string>
+    <string name="hint_no_profile_small">You don\'t have any profile</string>
+    <string name="hint_no_profile_big">No Profiles</string>
 </resources>

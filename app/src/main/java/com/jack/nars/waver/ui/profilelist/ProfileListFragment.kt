@@ -53,6 +53,7 @@ class ProfileListFragment : Fragment() {
             Timber.d("Profile updated: $it")
 
             adapter.submitList(it)
+            showNoProfiles(it.isEmpty())
         }
 
         return binding.root
@@ -76,5 +77,10 @@ class ProfileListFragment : Fragment() {
                 dialog.cancel()
             }
             .show()
+    }
+
+
+    private fun showNoProfiles(show: Boolean) {
+        binding.notProfileHint.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
