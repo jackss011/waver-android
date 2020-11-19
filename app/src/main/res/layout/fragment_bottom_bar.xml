@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorOnSurface"
-            tools:context=".ui.bottombar.BottomBarFragment">
+            tools:context=".ui.bottombar.BottomBarFragment"
+            android:elevation="@dimen/cardview_default_elevation">
 
         <ImageView
                 android:id="@+id/imageView"

@@ -6,6 +6,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurface">#f7f7f7</item>
     </style>
 
     <style name="Theme.Waver.OLED" parent="Theme.Waver">
