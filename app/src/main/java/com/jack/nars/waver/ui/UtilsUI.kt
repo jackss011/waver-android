@@ -1,10 +1,14 @@
 package com.jack.nars.waver.ui
 
+import android.app.Activity
 import android.graphics.Rect
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.Slider
 import timber.log.Timber
@@ -59,4 +63,11 @@ class SpacingBetween(private val spacing: Int) : RecyclerView.ItemDecoration() {
 
         Timber.d("SB - $pos of $count")
     }
+}
+
+
+fun Fragment.hideKeyboard() {
+    val activity = requireActivity()
+    activity.getSystemService<InputMethodManager>()
+        ?.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
 }

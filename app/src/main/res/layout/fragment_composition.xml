@@ -74,14 +74,13 @@
 
         <Button
                 android:id="@+id/btnSave"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
                 android:text="@string/btn_save_profile"
                 app:layout_constraintBottom_toTopOf="@+id/library"
-                app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.MaterialComponents.Button.TextButton" />
+                app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

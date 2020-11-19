@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentProfileEditorBinding
 import com.jack.nars.waver.databinding.FragmentProfileEditorBindingImpl
+import com.jack.nars.waver.ui.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -69,6 +70,11 @@ class ProfileEditorFragment : Fragment() {
         model.loadCurrentComposition()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        hideKeyboard()
+    }
 
     private fun showProgress(show: Boolean) {
         binding.progressSaving.visibility = if (show) View.VISIBLE else View.INVISIBLE
