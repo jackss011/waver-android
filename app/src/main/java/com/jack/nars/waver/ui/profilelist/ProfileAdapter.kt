@@ -45,13 +45,22 @@ class ProfileAdapter : ListAdapter<ProfileDisplayInfo, ProfileAdapter.Holder>(It
             binding.run {
                 textProfileName.text = di.name
                 textProfilePreview.text = "Placeholder for profile preview"
+
+                root.setOnClickListener {
+                    listener?.onProfileLoad(di.id)
+                }
+
+                root.setOnLongClickListener {
+                    listener?.onProfileDelete(di.id) ?: false
+                }
             }
         }
     }
 
 
     interface Listener {
-        fun onProfileSelected(id: Long)
+        fun onProfileLoad(id: Long)
+        fun onProfileDelete(id: Long): Boolean
     }
 }
 
