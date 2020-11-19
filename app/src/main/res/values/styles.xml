@@ -6,8 +6,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/colorBackground</item>
-
-        <item name="android:fontFamily">@font/roboto</item>
     </style>
 
     <style name="Theme.Waver.OLED" parent="Theme.Waver">
@@ -16,32 +14,45 @@
 
 
     <!-- Text Appearances -->
-    <style name="TextAppearance.Waver.CardTitle" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.Waver" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/raleway</item>
+    </style>
+
+    <style name="TextAppearance.Waver.Medium" parent="TextAppearance.Waver">
+        <item name="android:fontFamily">@font/raleway_medium</item>
+    </style>
+
+    <style name="TextAppearance.Waver.Bold" parent="TextAppearance.Waver">
+        <item name="android:fontFamily">@font/raleway_bold</item>
+    </style>
+
+    <style name="TextAppearance.Waver.CardTitle" parent="TextAppearance.Waver.Medium">
         <item name="android:textColor">#ddd</item>
         <item name="android:textSize">21sp</item>
     </style>
 
-    <style name="TextAppearance.Waver.BigTitle" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.Waver.BigTitle" parent="TextAppearance.Waver.Medium">
         <item name="android:textColor">#dadada</item>
         <item name="android:textSize">32sp</item>
     </style>
 
-    <style name="TextAppearance.Waver.ModalTitle" parent="TextAppearance.Waver.BigTitle">
+    <style name="TextAppearance.Waver.ModalTitle" parent="TextAppearance.Waver.Medium">
         <item name="android:textColor">#9C9C9C</item>
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="TextAppearance.Waver.BackgroundBlend.Small" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.Waver.BackgroundBlend.Small" parent="TextAppearance.Waver">
         <item name="android:textColor">#636363</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TextAppearance.Waver.BackgroundBlend.Big" parent="TextAppearance.Waver.BackgroundBlend.Small">
+        <item name="android:fontFamily">@font/raleway_medium</item>
         <item name="android:textSize">24sp</item>
         <item name="textAllCaps">true</item>
     </style>
 
-    <style name="TextAppearance.Waver.ListTitle" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.Waver.ListTitle" parent="TextAppearance.Waver">
         <item name="android:textColor">#ddd</item>
         <item name="android:textSize">16sp</item>
     </style>
@@ -49,6 +60,10 @@
     <style name="TextAppearance.Waver.ListTitle.Small" parent="TextAppearance.Waver.ListTitle">
         <item name="android:textColor">#aaa</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.Waver.Chip" parent="TextAppearance.Waver.Medium">
+        <!--        <item name="android:fontFamily">@font/raleway</item>-->
     </style>
 
 
@@ -71,12 +86,14 @@
         <!--        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Waver.CardTitle</item>-->
         <item name="android:textColor">@color/textPopup</item>
         <item name="android:iconTint">@color/textPopup</item>
+        <item name="android:fontFamily">@font/raleway_medium</item>
     </style>
 
     <style name="Widget.Waver.Chip.Loop" parent="Widget.MaterialComponents.Chip.Filter">
         <item name="android:textColor">@color/textSurfaceTitle</item>
         <item name="chipBackgroundColor">@color/colorOnSurface</item>
         <item name="checkedIconTint">@color/textSurfaceTitle</item>
+        <item name="android:textAppearance">@style/TextAppearance.Waver.Chip</item>
     </style>
 
 </resources>

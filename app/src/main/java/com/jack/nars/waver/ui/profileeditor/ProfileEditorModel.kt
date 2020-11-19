@@ -1,10 +1,7 @@
 package com.jack.nars.waver.ui.profileeditor
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.database.LoopInProfile
 import com.jack.nars.waver.data.database.Profile
@@ -15,6 +12,22 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
+class Validated<T>(initial: T, private val validator: (T) -> Boolean) {
+    var data: T = initial
+        set(value) {
+            field = value
+            isValid = validator(value)
+        }
+
+    var isValid = false
+        private set
+}
+
+
+val <T>LiveData<Validated<T>>.data: T?
+    get() = value?.data
+
+
 class ProfileEditorModel @ViewModelInject
 constructor(
     private val loopRepo: LoopRepository,
@@ -23,28 +36,43 @@ constructor(
 
     private val loadedComposition = MutableLiveData<CompositionData?>()
 
-    val isSaving = MutableLiveData(false)
-    val savedCorrectly = MutableLiveData<Boolean?>(null)
-
     fun loadCurrentComposition() {
         loadedComposition.value = loopRepo.activeCompositionData.value
     }
 
 
-    fun confirmed(name: String) {
+    val isSaving = MutableLiveData(false)
+    val savedCorrectly = MutableLiveData<Boolean?>(null)
+
+
+    val name = MutableLiveData(Validated("") { it.isNotEmpty() })
+    val canCreate = name.map { it.isValid }
+
+
+    fun confirmed() {
+        if (canCreate.value != true || isSaving.value == true) return
+
         val loaded = loadedComposition.value ?: throw IllegalStateException("Composition is null")
 
         viewModelScope.launch {
             isSaving.value = true
-            profileDao.createOrUpdateProfile(loaded.toDB(name))
+            profileDao.createOrUpdateProfile(
+                loaded.toDB(name.data ?: error("Invalid profile name"))
+            )
             isSaving.value = false
             savedCorrectly.value = true
         }
     }
 
 
+    fun onName(n: String) {
+        val old = name.value
+        name.value = old?.apply { data = n } ?: error("Name is null")
+    }
+
+
     fun savedCorrectlyReceived() {
-        savedCorrectly.value = null
+        if (savedCorrectly.value != null) savedCorrectly.value = null
     }
 }
 

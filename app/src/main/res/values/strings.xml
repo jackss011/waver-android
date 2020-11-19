@@ -12,4 +12,6 @@
     <string name="btn_back">Back</string>
     <string name="btn_save_profile">Save As Profile</string>
     <string name="desc_profile_img">Profile image</string>
+    <string name="snack_profile_created">Profile created</string>
+    <string name="snack_profile_create_error">Cannot create profile</string>
 </resources>

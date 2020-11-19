@@ -42,7 +42,7 @@ class CompositionFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
-                navController.navigate(CompositionFragmentDirections.actionMainToNewProfile())
+                navController.navigate(CompositionFragmentDirections.actionMainToCreateProfile())
             }
         }
 
