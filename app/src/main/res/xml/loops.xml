@@ -2,15 +2,38 @@
 <loops xmlns:android="http://schemas.android.com/apk/res/android">
     <loop id="test:ambient_music"
             title="Ambient Music"
-            description=""
-            mode="crossfade">
-        <source type="resource" id="@raw/ambient_loop"/>
+            description="">
+        <source type="resource" id="@raw/ambient_music"/>
     </loop>
 
     <loop id="test:brown_noise"
             title="Brown Noise"
-            description=""
-            mode="seamless">
+            description="">
         <source type="res" id="@raw/brown_noise"/>
     </loop>
+
+    <loop id="v1:forest1"
+            title="Forest"
+            description="">
+        <source type="res" id="@raw/forest"/>
+    </loop>
+
+    <loop id="v1:kalimba1"
+            title="Kalimba"
+            description="">
+        <source type="res" id="@raw/kalimba"/>
+    </loop>
+
+    <loop id="v1:spaceship1"
+            title="Spaceship"
+            description="">
+        <source type="res" id="@raw/spaceship"/>
+    </loop>
+
+    <loop id="v1:train1"
+            title="Train"
+            description="">
+        <source type="res" id="@raw/train"/>
+    </loop>
+
 </loops>

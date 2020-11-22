@@ -169,7 +169,6 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
         playersMesh = PlayersMesh(this)
 
         loopsRepository.staticLoops.forEach {
-            Timber.d(it.id)
             playersMesh.addLoop(it)
         }
 

@@ -13,7 +13,7 @@ import kotlin.math.roundToLong
 
 class LoopPlayer(context: Context) : BasePlayer(context) {
     private val blendDuration = 400
-    private val blendMargin = 2000
+    private val blendMargin = 1000
     private val monitorInterval = 300
 
 
