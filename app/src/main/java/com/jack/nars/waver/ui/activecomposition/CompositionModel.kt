@@ -1,15 +1,16 @@
 package com.jack.nars.waver.ui.activecomposition
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.jack.nars.waver.data.repos.LoopRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 
 data class LoopDisplayInfo(val id: String, val title: String, val intensity: Float = .5f)
 
-
-class CompositionModel @ViewModelInject
+@HiltViewModel
+class CompositionModel @Inject
 constructor(private val loopRepository: LoopRepository) : ViewModel() {
     val activeLoops = loopRepository.activeCompositionData.map { c ->
         c.loops.mapNotNull { item ->

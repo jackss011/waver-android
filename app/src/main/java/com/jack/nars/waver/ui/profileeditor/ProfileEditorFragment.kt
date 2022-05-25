@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentProfileEditorBinding
-import com.jack.nars.waver.databinding.FragmentProfileEditorBindingImpl
 import com.jack.nars.waver.ui.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +27,7 @@ class ProfileEditorFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentProfileEditorBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@ProfileEditorFragment
@@ -51,7 +50,7 @@ class ProfileEditorFragment : Fragment() {
                         showSaveSuccess()
                         navController.popBackStack()
                     }
-                    false -> showSaveError()
+                    else -> showSaveError()
                 }
 
                 savedCorrectlyReceived()

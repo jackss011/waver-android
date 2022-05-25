@@ -7,9 +7,11 @@ import com.jack.nars.waver.data.repos.ControlsRepository
 import com.jack.nars.waver.data.repos.LoopRepository
 import com.jack.nars.waver.data.repos.PlaybackRequest
 import com.jack.nars.waver.data.repos.PlaybackState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class BottomBarModel @ViewModelInject
+@HiltViewModel
+class BottomBarModel @Inject
 constructor(
     private val loopRepo: LoopRepository,
     private val controlsRepo: ControlsRepository

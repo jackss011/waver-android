@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jack.nars.waver.R
+//import com.jack.nars.waver.R
 import com.jack.nars.waver.databinding.FragmentCompositionBinding
 import com.jack.nars.waver.ui.SpacingBetween
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +43,7 @@ class CompositionFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
-                navController.navigate(CompositionFragmentDirections.actionMainToCreateProfile())
+                navController.navigate("hi")
             }
         }
 

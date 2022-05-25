@@ -6,9 +6,11 @@ import androidx.lifecycle.map
 import com.jack.nars.waver.data.repos.ControlsRepository
 import com.jack.nars.waver.data.repos.LoopRepository
 import com.jack.nars.waver.data.repos.PlaybackRequest
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class LoopLibraryModel @ViewModelInject constructor(
+@HiltViewModel
+class LoopLibraryModel @Inject constructor(
     private val loopRepository: LoopRepository,
     private val controlsRepository: ControlsRepository
 ) : ViewModel() {

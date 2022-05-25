@@ -1,12 +1,13 @@
 package com.jack.nars.waver
 
 import android.media.session.PlaybackState
-import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.ViewModel
 import com.jack.nars.waver.data.repos.ControlsRepository
+import javax.inject.Inject
 
-
-class MainModel @ViewModelInject
+@HiltViewModel
+class MainModel @Inject
 constructor(private val controlsRepository: ControlsRepository) : ViewModel() {
 
     fun onPbStateUpdate(playbackState: PlaybackState?) {

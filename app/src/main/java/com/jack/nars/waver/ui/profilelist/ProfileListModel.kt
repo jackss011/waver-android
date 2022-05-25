@@ -9,7 +9,9 @@ import com.jack.nars.waver.data.CompositionItem
 import com.jack.nars.waver.data.database.ProfileDao
 import com.jack.nars.waver.data.database.ProfileWithItems
 import com.jack.nars.waver.data.repos.LoopRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 data class ProfileDisplayInfo(
@@ -17,8 +19,8 @@ data class ProfileDisplayInfo(
     val name: String,
 )
 
-
-class ProfileListModel @ViewModelInject
+@HiltViewModel
+class ProfileListModel @Inject
 constructor(
     private val loopRepo: LoopRepository,
     private val profileDao: ProfileDao,

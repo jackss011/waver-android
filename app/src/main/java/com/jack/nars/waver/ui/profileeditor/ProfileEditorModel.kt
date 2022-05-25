@@ -8,8 +8,10 @@ import com.jack.nars.waver.data.database.Profile
 import com.jack.nars.waver.data.database.ProfileDao
 import com.jack.nars.waver.data.database.ProfileWithItems
 import com.jack.nars.waver.data.repos.LoopRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
 
 class Validated<T>(initial: T, private val validator: (T) -> Boolean) {
@@ -28,7 +30,8 @@ val <T>LiveData<Validated<T>>.data: T?
     get() = value?.data
 
 
-class ProfileEditorModel @ViewModelInject
+@HiltViewModel
+class ProfileEditorModel @Inject
 constructor(
     private val loopRepo: LoopRepository,
     private val profileDao: ProfileDao,

@@ -89,7 +89,7 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
                     this@SoundService,
                     0,
                     Intent(this@SoundService, MainActivity::class.java),
-                    0
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             )
         }

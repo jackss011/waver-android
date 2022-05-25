@@ -111,7 +111,7 @@ class ControlsNotificationBuilder(val context: SoundService)
                         context,
                         0,
                         Intent(action).setPackage(context.packageName),
-                        0
+                        PendingIntent.FLAG_IMMUTABLE
                     )
                 ).build()
             )
