@@ -11,8 +11,8 @@
             android:label="Composition"
             tools:layout="@layout/fragment_composition">
         <action
-                android:id="@+id/action_main_to_create_profile"
-                app:destination="@id/dest_create_profile" />
+                android:id="@+id/action_dest_main_to_dest_createProfile"
+                app:destination="@id/dest_createProfile" />
     </fragment>
 
     <fragment
@@ -22,13 +22,12 @@
             tools:layout="@layout/fragment_profile_list" />
 
     <fragment
-            android:id="@+id/dest_create_profile"
+            android:id="@+id/dest_createProfile"
             android:label="New Profile"
             android:name="com.jack.nars.waver.ui.profileeditor.ProfileEditorFragment"
             tools:layout="@layout/fragment_profile_editor" />
-
     <action
-            android:id="@+id/action_global_to_profiles"
+            android:id="@+id/action_global_dest_profiles"
             app:destination="@id/dest_profiles" />
 
 </navigation>

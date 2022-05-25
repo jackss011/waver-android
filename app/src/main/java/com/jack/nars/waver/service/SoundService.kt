@@ -14,7 +14,9 @@ import android.media.session.PlaybackState
 import android.app.PendingIntent
 import android.content.*
 import android.os.IBinder
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ServiceLifecycleDispatcher
+//import androidx.lifecycle.*
 import com.jack.nars.waver.MainActivity
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.repos.ControlsRepository
@@ -172,12 +174,12 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
             playersMesh.addLoop(it)
         }
 
-        loopsRepository.playableComposition.observe(owner = this) {
+        loopsRepository.playableComposition.observe(this) {
             updateCurrentComposition(it)
 //            Timber.v("New composition to sound service: $it")
         }
 
-        controlsRepository.masterVolume.observe(owner = this) {
+        controlsRepository.masterVolume.observe(this) {
             updateMasterVolume(it)
         }
     }

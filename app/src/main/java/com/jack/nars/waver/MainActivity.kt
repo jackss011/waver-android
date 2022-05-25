@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener(this.navigationChangeListener)
 
         findViewById<Button>(R.id.navBtnProfiles).setOnClickListener {
-            navController.navigate("hi")
+            navController.navigate(R.id.action_global_dest_profiles)
             drawerLayout.closeDrawers()
         }
     }
