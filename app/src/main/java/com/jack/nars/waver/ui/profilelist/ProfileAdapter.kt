@@ -1,20 +1,11 @@
 package com.jack.nars.waver.ui.profilelist
 
-import com.jack.nars.waver.ui.activecomposition.LoopDisplayInfo
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.slider.Slider
-import com.jack.nars.waver.R
-import com.jack.nars.waver.databinding.ItemActiveLoopBinding
 import com.jack.nars.waver.databinding.ItemProfileBinding
-import com.jack.nars.waver.ui.setupAsIntensity
-import timber.log.Timber
 
 
 class ProfileAdapter : ListAdapter<ProfileDisplayInfo, ProfileAdapter.Holder>(ItemCallback()) {

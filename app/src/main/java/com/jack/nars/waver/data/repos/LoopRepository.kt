@@ -64,7 +64,7 @@ class LoopRepository @Inject constructor(
             firstOrNull()?.let { compositionCache.saveLoop(it) }
         }
 
-        val new = old.copy(loops = old.loops - toRemoveList)
+        val new = old.copy(loops = old.loops - toRemoveList.toSet())
         updateActiveComposition(new)
     }
 

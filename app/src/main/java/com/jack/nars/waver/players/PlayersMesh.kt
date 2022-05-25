@@ -3,7 +3,6 @@ package com.jack.nars.waver.players
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.Loop
 
@@ -83,7 +82,7 @@ class PlayersMesh(val context: Context) {
         if (old != null) {
             val oldIds = old.loops.map { it.id }
             val newIds = new.loops.map { it.id }
-            val removed = (oldIds - newIds)
+            val removed = (oldIds - newIds.toSet())
             removed.forEach { players[it]?.pause() }
         }
 

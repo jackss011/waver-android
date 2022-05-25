@@ -1,6 +1,5 @@
 package com.jack.nars.waver.ui.bottombar
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.jack.nars.waver.data.repos.ControlsRepository
@@ -13,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomBarModel @Inject
 constructor(
-    private val loopRepo: LoopRepository,
+    loopRepo: LoopRepository,
     private val controlsRepo: ControlsRepository
 ) : ViewModel() {
 

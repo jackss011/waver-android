@@ -1,6 +1,5 @@
 package com.jack.nars.waver.ui
 
-import android.app.Activity
 import android.graphics.Rect
 import android.view.View
 import android.view.inputmethod.InputMethodManager

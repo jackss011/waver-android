@@ -7,7 +7,7 @@ import com.jack.nars.waver.players.BasePlayer
 
 
 class SeamlessLoopPlayer(context: Context) : BasePlayer(context) {
-    val tag = "SeamlessLoopPlayer"
+    private val tag = "SeamlessLoopPlayer"
 
     private lateinit var mpA: MediaPlayer
     private lateinit var mpB: MediaPlayer

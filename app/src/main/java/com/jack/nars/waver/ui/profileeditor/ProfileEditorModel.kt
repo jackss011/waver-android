@@ -1,6 +1,5 @@
 package com.jack.nars.waver.ui.profileeditor
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.jack.nars.waver.data.CompositionData
 import com.jack.nars.waver.data.database.LoopInProfile

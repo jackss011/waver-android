@@ -1,6 +1,5 @@
 package com.jack.nars.waver.ui.profilelist
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope

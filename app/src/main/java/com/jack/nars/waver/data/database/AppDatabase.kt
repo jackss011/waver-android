@@ -1,8 +1,9 @@
 package com.jack.nars.waver.data.database
 
 import android.content.Context
-import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 

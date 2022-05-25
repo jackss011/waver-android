@@ -6,7 +6,7 @@ import org.xmlpull.v1.XmlPullParser
 
 
 open class XmlParser<P : XmlPullParser>(private val parser: P) {
-    protected val attributeSet = Xml.asAttributeSet(parser)
+    protected val attributeSet: AttributeSet = Xml.asAttributeSet(parser)
 
     protected open fun parseArgs(): Map<String, String> {
         val map = mutableMapOf<String, String>()

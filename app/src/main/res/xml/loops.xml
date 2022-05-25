@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<loops xmlns:android="http://schemas.android.com/apk/res/android">
+<loops>
     <loop id="test:ambient_music"
             title="Ambient Music"
             description="">

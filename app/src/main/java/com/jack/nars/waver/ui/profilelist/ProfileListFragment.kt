@@ -24,7 +24,7 @@ class ProfileListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         adapter = ProfileAdapter().apply {
             listener = object : ProfileAdapter.Listener {
                 override fun onProfileLoad(id: Long) {

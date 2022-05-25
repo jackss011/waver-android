@@ -4,19 +4,17 @@ import android.media.MediaMetadata
 import android.media.browse.MediaBrowser
 import android.media.session.MediaController
 import android.media.session.PlaybackState
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.viewModels
-import androidx.core.view.GravityCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.jack.nars.waver.data.repos.PlaybackRequest
 import com.jack.nars.waver.databinding.ActivityMainBinding
 import com.jack.nars.waver.service.SoundService
-import com.jack.nars.waver.data.repos.PlaybackRequest
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -92,9 +90,9 @@ class MainActivity : AppCompatActivity() {
 
     private val navigationChangeListener =
         NavController.OnDestinationChangedListener { _, destination, arguments ->
-            when (destination) {
-
-            }
+//            when (destination) {
+//
+//            }
         }
 
 

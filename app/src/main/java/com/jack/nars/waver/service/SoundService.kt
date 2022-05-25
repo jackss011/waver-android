@@ -243,7 +243,7 @@ class SoundService : MediaBrowserService(), LifecycleOwner {
         clientPackageName: String,
         clientUid: Int,
         rootHints: Bundle?
-    ): BrowserRoot? {
+    ): BrowserRoot {
         return BrowserRoot("empty_media_root_id", null)
     }
 
